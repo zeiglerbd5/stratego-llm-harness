@@ -326,11 +326,17 @@
  ],
  "report": {
   "by_model": {
-   "gpt-oss:20b": {
+   "a": {
     "wins": 3,
+    "losses": 0,
+    "draws": 3,
+    "games": 6
+   },
+   "b": {
+    "wins": 0,
     "losses": 3,
-    "draws": 6,
-    "games": 12
+    "draws": 3,
+    "games": 6
    }
   },
   "by_color": {
@@ -339,22 +345,41 @@
    "draw": 3
   },
   "means": {
-   "gpt-oss:20b": {
-    "moves": 26.58,
-    "piece_types_used": 4.0,
-    "combats_initiated": 1.17,
-    "combat_won": 0.25,
-    "combat_lost": 0.08,
-    "combat_traded": 0.83,
-    "closest_to_enemy_flag": 4.75,
-    "shuffle_moves": 9.5,
-    "shuffle_rate": 0.33,
+   "a": {
+    "moves": 26.67,
+    "piece_types_used": 3.83,
+    "combats_initiated": 1.67,
+    "combat_won": 0.5,
+    "combat_lost": 0.0,
+    "combat_traded": 1.17,
+    "closest_to_enemy_flag": 4.0,
+    "shuffle_moves": 8.33,
+    "shuffle_rate": 0.29,
     "retries": 1.33,
-    "thinking_tokens": 4853.17,
-    "seconds": 440.34,
-    "reasoning_captured": 26.58
+    "thinking_tokens": 4892.17,
+    "seconds": 453.12,
+    "reasoning_captured": 26.67
+   },
+   "b": {
+    "moves": 26.5,
+    "piece_types_used": 4.17,
+    "combats_initiated": 0.67,
+    "combat_won": 0.0,
+    "combat_lost": 0.17,
+    "combat_traded": 0.5,
+    "closest_to_enemy_flag": 5.5,
+    "shuffle_moves": 10.67,
+    "shuffle_rate": 0.38,
+    "retries": 1.33,
+    "thinking_tokens": 4814.17,
+    "seconds": 427.57,
+    "reasoning_captured": 26.5
    }
   },
-  "n_games": 6
+  "n_games": 6,
+  "names": {
+   "a": "gpt-oss:20b",
+   "b": "gpt-oss:20b"
+  }
  }
 }

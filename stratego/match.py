@@ -97,15 +97,20 @@ def _completed(path: Path) -> dict | None:
 
 
 def aggregate(games: list[dict], a: str, b: str) -> dict:
-    by_model = {a: {"wins": 0, "losses": 0, "draws": 0, "games": 0},
-                b: {"wins": 0, "losses": 0, "draws": 0, "games": 0}}
+    """Scores by ROLE (a/b), not by model name: in self-play both names are
+    identical and keying by name double-counts every game."""
+    by_model = {"a": {"wins": 0, "losses": 0, "draws": 0, "games": 0},
+                "b": {"wins": 0, "losses": 0, "draws": 0, "games": 0}}
     by_color = {"R": 0, "B": 0, "draw": 0}
-    pooled: dict[str, dict[str, list]] = {a: {}, b: {}}
+    pooled: dict[str, dict[str, list]] = {"a": {}, "b": {}}
 
     for g in games:
         res = g["adjudicated"]
         by_color[res if res in ("R", "B") else "draw"] += 1
-        for color, model in (("R", g["red_model"]), ("B", g["blue_model"])):
+        # tag ends in 'a' when a is Red, 'b' when a is Blue (colours swapped)
+        a_is_red = g["tag"].endswith("a")
+        roles = (("R", "a" if a_is_red else "b"), ("B", "b" if a_is_red else "a"))
+        for color, model in roles:
             m = by_model[model]
             m["games"] += 1
             if res == "draw":
@@ -121,16 +126,17 @@ def aggregate(games: list[dict], a: str, b: str) -> dict:
     means = {m: {k: round(sum(v) / len(v), 2) for k, v in stats.items() if v}
              for m, stats in pooled.items()}
     return {"by_model": by_model, "by_color": by_color, "means": means,
-            "n_games": len(games)}
+            "n_games": len(games), "names": {"a": a, "b": b}}
 
 
 def format_report(r: dict, a: str, b: str) -> str:
     if not r.get("n_games"):
         return f"MATCH  {a}  vs  {b}   no completed games"
-    lines = [f"MATCH  {a}  vs  {b}   ({r['n_games']} games, adjudicated)"]
-    for m in (a, b):
-        s = r["by_model"][m]
-        lines.append(f"  {m:20s} W {s['wins']}  L {s['losses']}  D {s['draws']}")
+    lines = [f"MATCH  {a} (a)  vs  {b} (b)   ({r['n_games']} games, adjudicated)"]
+    for role, name in (("a", a), ("b", b)):
+        s = r["by_model"][role]
+        lines.append(f"  {role}: {name:17s} W {s['wins']}  L {s['losses']}  D {s['draws']}"
+                     f"   ({s['games']} games)")
     c = r["by_color"]
     lines.append(f"  by colour:           RED {c['R']}  BLUE {c['B']}  draw {c['draw']}")
     lines.append("")
@@ -138,8 +144,8 @@ def format_report(r: dict, a: str, b: str) -> str:
             ("combats_initiated", "combats"), ("combat_won", "won"),
             ("combat_lost", "lost"), ("retries", "retries"),
             ("thinking_tokens", "think tok"), ("seconds", "seconds")]
-    lines.append(f"  {'mean per game':18s}{a[:14]:>16s}{b[:14]:>16s}")
+    lines.append(f"  {'mean per game':18s}{'a: '+a[:12]:>16s}{'b: '+b[:12]:>16s}")
     for k, label in keys:
-        va = r["means"][a].get(k, "-"); vb = r["means"][b].get(k, "-")
+        va = r["means"]["a"].get(k, "-"); vb = r["means"]["b"].get(k, "-")
         lines.append(f"  {label:18s}{str(va):>16s}{str(vb):>16s}")
     return "\n".join(lines)
