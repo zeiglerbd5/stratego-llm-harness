@@ -1,0 +1,1 @@
+"""Stratego LLM benchmark harness."""
