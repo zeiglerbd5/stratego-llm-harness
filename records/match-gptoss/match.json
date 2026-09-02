@@ -1,0 +1,360 @@
+{
+ "model_a": "gpt-oss:20b",
+ "model_b": "gpt-oss:20b",
+ "variant": "barrage",
+ "thinking": "brief",
+ "move_cap": 60,
+ "games": [
+  {
+   "tag": "p0a",
+   "file": "records/match-gptoss/p0a.jsonl",
+   "seed": 100,
+   "opening": "corner-fortress",
+   "red_model": "gpt-oss:20b",
+   "blue_model": "gpt-oss:20b",
+   "played": "draw",
+   "adjudicated": "R",
+   "adjudicated_reason": "material +3",
+   "material": {
+    "R": 22,
+    "B": 19
+   },
+   "plies": 60,
+   "per_side": {
+    "R": {
+     "moves": 30,
+     "piece_types_used": 4,
+     "combats_initiated": 2,
+     "combat_won": 0,
+     "combat_lost": 0,
+     "combat_traded": 2,
+     "closest_to_enemy_flag": 4,
+     "shuffle_moves": 6,
+     "shuffle_rate": 0.2,
+     "retries": 2,
+     "thinking_tokens": 4088,
+     "seconds": 284.0,
+     "reasoning_captured": 30
+    },
+    "B": {
+     "moves": 30,
+     "piece_types_used": 5,
+     "combats_initiated": 1,
+     "combat_won": 0,
+     "combat_lost": 1,
+     "combat_traded": 0,
+     "closest_to_enemy_flag": 6,
+     "shuffle_moves": 10,
+     "shuffle_rate": 0.33,
+     "retries": 1,
+     "thinking_tokens": 4393,
+     "seconds": 362.1,
+     "reasoning_captured": 30
+    }
+   },
+   "failures": {
+    "illegal_move": 3,
+    "parse_failure": 0,
+    "budget_exhausted": 0
+   }
+  },
+  {
+   "tag": "p0b",
+   "file": "records/match-gptoss/p0b.jsonl",
+   "seed": 100,
+   "opening": "corner-fortress",
+   "red_model": "gpt-oss:20b",
+   "blue_model": "gpt-oss:20b",
+   "played": "draw",
+   "adjudicated": "B",
+   "adjudicated_reason": "material -6",
+   "material": {
+    "R": 25,
+    "B": 31
+   },
+   "plies": 60,
+   "per_side": {
+    "R": {
+     "moves": 30,
+     "piece_types_used": 6,
+     "combats_initiated": 0,
+     "combat_won": 0,
+     "combat_lost": 0,
+     "combat_traded": 0,
+     "closest_to_enemy_flag": 6,
+     "shuffle_moves": 13,
+     "shuffle_rate": 0.43,
+     "retries": 2,
+     "thinking_tokens": 6831,
+     "seconds": 475.8,
+     "reasoning_captured": 30
+    },
+    "B": {
+     "moves": 30,
+     "piece_types_used": 4,
+     "combats_initiated": 2,
+     "combat_won": 1,
+     "combat_lost": 0,
+     "combat_traded": 1,
+     "closest_to_enemy_flag": 3,
+     "shuffle_moves": 7,
+     "shuffle_rate": 0.23,
+     "retries": 1,
+     "thinking_tokens": 4026,
+     "seconds": 411.6,
+     "reasoning_captured": 30
+    }
+   },
+   "failures": {
+    "illegal_move": 2,
+    "parse_failure": 0,
+    "budget_exhausted": 1
+   }
+  },
+  {
+   "tag": "p1a",
+   "file": "records/match-gptoss/p1a.jsonl",
+   "seed": 101,
+   "opening": "far-corner",
+   "red_model": "gpt-oss:20b",
+   "blue_model": "gpt-oss:20b",
+   "played": "draw",
+   "adjudicated": "draw",
+   "adjudicated_reason": "material level (+0)",
+   "material": {
+    "R": 31,
+    "B": 31
+   },
+   "plies": 60,
+   "per_side": {
+    "R": {
+     "moves": 30,
+     "piece_types_used": 4,
+     "combats_initiated": 1,
+     "combat_won": 0,
+     "combat_lost": 0,
+     "combat_traded": 1,
+     "closest_to_enemy_flag": 5,
+     "shuffle_moves": 17,
+     "shuffle_rate": 0.57,
+     "retries": 2,
+     "thinking_tokens": 4139,
+     "seconds": 399.3,
+     "reasoning_captured": 30
+    },
+    "B": {
+     "moves": 30,
+     "piece_types_used": 3,
+     "combats_initiated": 0,
+     "combat_won": 0,
+     "combat_lost": 0,
+     "combat_traded": 0,
+     "closest_to_enemy_flag": 9,
+     "shuffle_moves": 22,
+     "shuffle_rate": 0.73,
+     "retries": 1,
+     "thinking_tokens": 3650,
+     "seconds": 388.0,
+     "reasoning_captured": 30
+    }
+   },
+   "failures": {
+    "illegal_move": 3,
+    "parse_failure": 0,
+    "budget_exhausted": 0
+   }
+  },
+  {
+   "tag": "p1b",
+   "file": "records/match-gptoss/p1b.jsonl",
+   "seed": 101,
+   "opening": "far-corner",
+   "red_model": "gpt-oss:20b",
+   "blue_model": "gpt-oss:20b",
+   "played": "draw",
+   "adjudicated": "draw",
+   "adjudicated_reason": "material level (+0)",
+   "material": {
+    "R": 31,
+    "B": 31
+   },
+   "plies": 60,
+   "per_side": {
+    "R": {
+     "moves": 30,
+     "piece_types_used": 4,
+     "combats_initiated": 1,
+     "combat_won": 0,
+     "combat_lost": 0,
+     "combat_traded": 1,
+     "closest_to_enemy_flag": 5,
+     "shuffle_moves": 12,
+     "shuffle_rate": 0.4,
+     "retries": 2,
+     "thinking_tokens": 6156,
+     "seconds": 463.0,
+     "reasoning_captured": 30
+    },
+    "B": {
+     "moves": 30,
+     "piece_types_used": 4,
+     "combats_initiated": 0,
+     "combat_won": 0,
+     "combat_lost": 0,
+     "combat_traded": 0,
+     "closest_to_enemy_flag": 6,
+     "shuffle_moves": 7,
+     "shuffle_rate": 0.23,
+     "retries": 2,
+     "thinking_tokens": 8455,
+     "seconds": 539.6,
+     "reasoning_captured": 30
+    }
+   },
+   "failures": {
+    "illegal_move": 1,
+    "parse_failure": 0,
+    "budget_exhausted": 3
+   }
+  },
+  {
+   "tag": "p2a",
+   "file": "records/match-gptoss/p2a.jsonl",
+   "seed": 102,
+   "opening": "centre-guard",
+   "red_model": "gpt-oss:20b",
+   "blue_model": "gpt-oss:20b",
+   "played": "R",
+   "adjudicated": "R",
+   "adjudicated_reason": "flag_captured",
+   "material": {
+    "R": 38,
+    "B": 34
+   },
+   "plies": 19,
+   "per_side": {
+    "R": {
+     "moves": 10,
+     "piece_types_used": 2,
+     "combats_initiated": 3,
+     "combat_won": 2,
+     "combat_lost": 0,
+     "combat_traded": 1,
+     "closest_to_enemy_flag": 0,
+     "shuffle_moves": 1,
+     "shuffle_rate": 0.1,
+     "retries": 0,
+     "thinking_tokens": 2203,
+     "seconds": 206.9,
+     "reasoning_captured": 10
+    },
+    "B": {
+     "moves": 9,
+     "piece_types_used": 1,
+     "combats_initiated": 0,
+     "combat_won": 0,
+     "combat_lost": 0,
+     "combat_traded": 0,
+     "closest_to_enemy_flag": 5,
+     "shuffle_moves": 2,
+     "shuffle_rate": 0.22,
+     "retries": 1,
+     "thinking_tokens": 1235,
+     "seconds": 181.1,
+     "reasoning_captured": 9
+    }
+   },
+   "failures": {
+    "illegal_move": 1,
+    "parse_failure": 0,
+    "budget_exhausted": 0
+   }
+  },
+  {
+   "tag": "p2b",
+   "file": "records/match-gptoss/p2b.jsonl",
+   "seed": 102,
+   "opening": "centre-guard",
+   "red_model": "gpt-oss:20b",
+   "blue_model": "gpt-oss:20b",
+   "played": "draw",
+   "adjudicated": "draw",
+   "adjudicated_reason": "material level (+0)",
+   "material": {
+    "R": 15,
+    "B": 15
+   },
+   "plies": 60,
+   "per_side": {
+    "R": {
+     "moves": 30,
+     "piece_types_used": 6,
+     "combats_initiated": 2,
+     "combat_won": 0,
+     "combat_lost": 0,
+     "combat_traded": 2,
+     "closest_to_enemy_flag": 2,
+     "shuffle_moves": 5,
+     "shuffle_rate": 0.17,
+     "retries": 1,
+     "thinking_tokens": 6620,
+     "seconds": 695.4,
+     "reasoning_captured": 30
+    },
+    "B": {
+     "moves": 30,
+     "piece_types_used": 5,
+     "combats_initiated": 2,
+     "combat_won": 0,
+     "combat_lost": 0,
+     "combat_traded": 2,
+     "closest_to_enemy_flag": 6,
+     "shuffle_moves": 12,
+     "shuffle_rate": 0.4,
+     "retries": 1,
+     "thinking_tokens": 6442,
+     "seconds": 877.3,
+     "reasoning_captured": 30
+    }
+   },
+   "failures": {
+    "illegal_move": 0,
+    "parse_failure": 0,
+    "budget_exhausted": 2
+   }
+  }
+ ],
+ "report": {
+  "by_model": {
+   "gpt-oss:20b": {
+    "wins": 3,
+    "losses": 3,
+    "draws": 6,
+    "games": 12
+   }
+  },
+  "by_color": {
+   "R": 2,
+   "B": 1,
+   "draw": 3
+  },
+  "means": {
+   "gpt-oss:20b": {
+    "moves": 26.58,
+    "piece_types_used": 4.0,
+    "combats_initiated": 1.17,
+    "combat_won": 0.25,
+    "combat_lost": 0.08,
+    "combat_traded": 0.83,
+    "closest_to_enemy_flag": 4.75,
+    "shuffle_moves": 9.5,
+    "shuffle_rate": 0.33,
+    "retries": 1.33,
+    "thinking_tokens": 4853.17,
+    "seconds": 440.34,
+    "reasoning_captured": 26.58
+   }
+  },
+  "n_games": 6
+ }
+}
