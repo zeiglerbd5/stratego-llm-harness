@@ -16,12 +16,14 @@ OLLAMA = "http://127.0.0.1:11434/v1"
 OPENROUTER = "https://openrouter.ai/api/v1"
 
 
-def profile_for(spec: str, endpoint: str | None) -> ModelProfile:
+def profile_for(spec: str, endpoint: str | None,
+                max_tokens: int = 4000) -> ModelProfile:
     """'llama3:latest' -> local; 'openrouter/anthropic/claude-...' -> cloud."""
     if spec.startswith("openrouter/"):
         return ModelProfile(spec.removeprefix("openrouter/"), OPENROUTER,
-                            os.environ.get("OPENROUTER_API_KEY"))
-    return ModelProfile(spec, endpoint or OLLAMA)
+                            os.environ.get("OPENROUTER_API_KEY"),
+                            max_tokens=max_tokens)
+    return ModelProfile(spec, endpoint or OLLAMA, max_tokens=max_tokens)
 
 
 def main() -> None:
@@ -42,6 +44,7 @@ def main() -> None:
                     help="append the Strategy Guide (contaminates a benchmark; "
                          "recorded in the Game Record)")
     ap.add_argument("--move-cap", type=int, default=400)
+    ap.add_argument("--max-tokens", type=int, default=4000, help="output ceiling per attempt, thinking plus answer, doubled once on exhaustion. Must not bind at the chosen --thinking or the Game is contaminated (ADR-0001): 4000 fits brief on gpt-oss:20b, standard needs ~16000")
     ap.add_argument("--seed", type=int, default=0)
     ap.add_argument("--out", default="records/game.jsonl")
     ap.add_argument("--deployment", default="library",
@@ -53,15 +56,16 @@ def main() -> None:
                     help="name a library opening; both sides use it (paired Game)")
     args = ap.parse_args()
 
-    rp = profile_for(args.red, args.red_endpoint)
-    bp = profile_for(args.blue, args.blue_endpoint)
+    rp = profile_for(args.red, args.red_endpoint, args.max_tokens)
+    bp = profile_for(args.blue, args.blue_endpoint, args.max_tokens)
     red = Agent(f"red:{args.red}", rp, "R", args.thinking, args.move_assist,
                 args.threat_assist, args.strategy_guide)
     blue = Agent(f"blue:{args.blue}", bp, "B", args.thinking, args.move_assist,
                  args.threat_assist, args.strategy_guide)
 
     print(f"{args.variant} | {red.name} vs {blue.name} | "
-          f"thinking={args.thinking} move_assist={args.move_assist} "
+          f"thinking={args.thinking} max_tokens={args.max_tokens} "
+          f"move_assist={args.move_assist} "
           f"threat_assist={args.threat_assist} deployment={args.deployment}"
           f"{' +guide' if args.strategy_guide else ''}")
     summary = play_game(red, blue, args.variant, args.move_cap, args.out,

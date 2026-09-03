@@ -82,6 +82,7 @@ def _merge_sources(sources: set[str]) -> str:
 
 def _attempt(i: int, comp: Completion) -> dict:
     return {"attempt": i, "seconds": comp.seconds,
+            "prompt_tokens": comp.prompt_tokens,
             "completion_tokens": comp.completion_tokens,
             "thinking_tokens": comp.thinking_tokens,
             "thinking_tokens_source": comp.thinking_tokens_source,
@@ -245,9 +246,12 @@ class Agent:
 
             if comp.budget_exhausted:
                 # Spent its thinking budget and returned nothing. This is not an
-                # illegal Move and is retried once at a raised budget.
+                # illegal Move and is retried once at a raised budget. If the
+                # context window bound first, that is the harness's ceiling,
+                # not the Model's, and is labelled so (ADR-0001 counts hits).
                 rec["ok"] = False
                 rec["failure"] = "budget_exhausted"
+                rec["ceiling"] = "context" if comp.context_bound else "budget"
                 attempts.append(rec)
                 failure = "budget_exhausted"
                 budget = int((budget or self.profile.max_tokens) * 2)

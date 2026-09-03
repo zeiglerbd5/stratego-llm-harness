@@ -77,7 +77,9 @@ def play_match(model_a: ModelProfile, model_b: ModelProfile, pairs: int,
         {"by_model": {}, "by_color": {}, "means": {}, "n_games": 0}
     (out_dir / "match.json").write_text(json.dumps(
         {"model_a": model_a.name, "model_b": model_b.name, "variant": variant,
-         "thinking": thinking, "move_cap": move_cap, "games": games,
+         "thinking": thinking, "max_tokens": model_a.max_tokens,
+         "context_tokens": model_a.context_tokens, "served_as": model_a.served_name,
+         "move_cap": move_cap, "games": games,
          "report": report}, indent=1))
     return report
 

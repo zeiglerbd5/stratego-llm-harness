@@ -109,6 +109,8 @@ def analyze(path: str | Path) -> dict:
             for a in t.get("attempts", []):
                 if not a.get("ok"):
                     kind = a.get("error_kind") or a.get("failure") or "unknown"
+                    if a.get("ceiling"):
+                        kind += ":" + a["ceiling"]     # budget_exhausted:context
                     rejections[kind] = rejections.get(kind, 0) + 1
 
         # Records written before thinking_tokens_source existed stored the

@@ -2,8 +2,9 @@
 
 OpenRouter and Ollama both return the native reasoning trace on
 `choices[].message.reasoning`, so a single transport serves cloud and local.
-Ollama's native API is needed for two things only: residency control, and
-counting the tokens in that trace (see `_thinking_tokens`).
+Ollama's native API is needed for three things only: residency control,
+counting the tokens in that trace (see `_thinking_tokens`), and giving a local
+Model a context window big enough to think in (see `ensure_context`).
 """
 from __future__ import annotations
 
@@ -31,6 +32,12 @@ class ModelProfile:
     max_tokens: int = 4000
     ceiling_tokens: int | None = None      # open-mode, non-binding
     supports_schema: bool = True
+    # Local only; cloud endpoints manage their own context. Ollama serves every
+    # Model in a 4,096-token window by default, and /v1 has no way to widen it:
+    # a ~1,500-token prompt then leaves ~2,600 tokens for thinking AND answer,
+    # which gpt-oss:20b at `standard` exhausts on its first Move, every time.
+    context_tokens: int | None = 32768
+    served_name: str | None = None         # the derived Model actually asked for
 
 
 @dataclass
@@ -43,6 +50,7 @@ class Completion:
     seconds: float
     thinking_tokens: int = 0            # tokens in the native reasoning trace
     thinking_tokens_source: str = "none"    # provider | tokenizer | estimate | none
+    context_bound: bool = False         # cut off by the context window, not max_tokens
 
     @property
     def budget_exhausted(self) -> bool:
@@ -60,8 +68,9 @@ class AdapterError(RuntimeError):
 def complete(profile: ModelProfile, messages: list[dict], schema: dict | None,
              thinking: str = "standard", max_tokens: int | None = None,
              timeout: int = 600) -> Completion:
+    ensure_context(profile)
     body: dict = {
-        "model": profile.name,
+        "model": _api_name(profile),
         "messages": messages,
         "max_tokens": max_tokens or profile.max_tokens,
         "temperature": 0.3,
@@ -111,7 +120,44 @@ def complete(profile: ModelProfile, messages: list[dict], schema: dict | None,
     )
     comp.thinking_tokens, comp.thinking_tokens_source = \
         _thinking_tokens(profile, usage, comp.reasoning)
+    if comp.finish_reason == "length" and profile.context_tokens \
+            and _ollama_root(profile) is not None:
+        # A budget hit is the Model's; a context hit is the harness's. Under
+        # the schema completion_tokens may omit the trace, so take the larger.
+        used = comp.prompt_tokens + max(comp.completion_tokens, comp.thinking_tokens)
+        comp.context_bound = used >= profile.context_tokens - 32
     return comp
+
+
+def ensure_context(profile: ModelProfile) -> None:
+    """Serve a local Model through a derived variant with `context_tokens` of
+    context. Ollama's /v1 ignores `options.num_ctx` (tested), so the only
+    per-Model control is a PARAMETER baked into a derived Model. /api/create
+    with `from` shares the weights and takes ~0.1 s; the name records what
+    was served, e.g. `gpt-oss:20b-ctx32k`. Cloud endpoints are untouched."""
+    root = _ollama_root(profile)
+    if root is None or not profile.context_tokens or profile.served_name:
+        return
+    derived = f"{profile.name}-ctx{profile.context_tokens // 1024}k"
+    req = urllib.request.Request(
+        root + "/api/create",
+        data=json.dumps({"model": derived, "from": profile.name, "stream": False,
+                         "parameters": {"num_ctx": profile.context_tokens}}).encode(),
+        headers={"Content-Type": "application/json"})
+    try:
+        raw = json.loads(urllib.request.urlopen(req, timeout=120).read())
+    except urllib.error.HTTPError as e:
+        raise AdapterError(f"{profile.name}: could not derive {derived}: "
+                           f"HTTP {e.code} {e.read()[:300]!r}") from e
+    except Exception as e:
+        raise AdapterError(f"{profile.name}: could not derive {derived}: {e}") from e
+    if raw.get("status") != "success":
+        raise AdapterError(f"{profile.name}: could not derive {derived}: {raw!r}")
+    profile.served_name = derived
+
+
+def _api_name(profile: ModelProfile) -> str:
+    return profile.served_name or profile.name
 
 
 def _thinking_tokens(profile: ModelProfile, usage: dict,
@@ -153,7 +199,7 @@ def count_tokens(profile: ModelProfile, text: str) -> int | None:
         return None
     req = urllib.request.Request(
         root + "/api/generate",
-        data=json.dumps({"model": profile.name, "prompt": text, "raw": True,
+        data=json.dumps({"model": _api_name(profile), "prompt": text, "raw": True,
                          "stream": False, "options": {"num_predict": 1}}).encode(),
         headers={"Content-Type": "application/json"})
     try:
@@ -200,7 +246,7 @@ def unload(profile: ModelProfile) -> None:
         return
     req = urllib.request.Request(
         root + "/api/generate",
-        data=json.dumps({"model": profile.name, "keep_alive": 0}).encode(),
+        data=json.dumps({"model": _api_name(profile), "keep_alive": 0}).encode(),
         headers={"Content-Type": "application/json"})
     try:
         urllib.request.urlopen(req, timeout=30).read()

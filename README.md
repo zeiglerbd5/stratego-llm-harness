@@ -27,6 +27,11 @@ Key switches: `--variant barrage|classic`, `--thinking off|brief|standard|deep`,
 `--move-assist` / `--threat-assist none|hints|full`, `--deployment model|library`,
 `--strategy-guide` (contaminates a benchmark; recorded when used).
 
+Local Models are served through a derived variant with a 32k context window
+(`gpt-oss:20b` plays as `gpt-oss:20b-ctx32k`, created on first use and visible
+in `ollama list`). Ollama's 4k default cut off any real reasoning trace before
+the answer, and its OpenAI endpoint offers no other way to widen it.
+
 ## Layout
 
 ```

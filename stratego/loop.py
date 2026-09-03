@@ -5,6 +5,7 @@ import random
 from pathlib import Path
 
 from . import rules as R
+from .adapter import ensure_context
 from .agent import Agent, prompt_version
 from . import deployments as lib
 from .game import GameState, random_deployment
@@ -25,15 +26,23 @@ def play_game(red: Agent, blue: Agent, variant: str = "barrage",
     which is what a paired Game (colours swapped) needs to cancel setup luck.
     """
     rng = random.Random(seed)
+    for ag in (red, blue):
+        ensure_context(ag.profile)      # before game_start, so it is recorded
     rec = GameRecord(out, {
         "variant": variant, "move_cap": move_cap, "seed": seed,
         "deployment_source": deployment, "library_entry": library_entry,
         "prompt_version": prompt_version(red.strategy_guide or blue.strategy_guide),
         "red": {"agent": red.name, "model": red.profile.name,
+                "served_as": red.profile.served_name,
+                "context_tokens": red.profile.context_tokens,
+                "max_tokens": red.profile.max_tokens,
                 "thinking": red.thinking, "move_assist": red.move_assist,
                 "threat_assist": red.threat_assist,
                 "strategy_guide": red.strategy_guide},
         "blue": {"agent": blue.name, "model": blue.profile.name,
+                 "served_as": blue.profile.served_name,
+                 "context_tokens": blue.profile.context_tokens,
+                 "max_tokens": blue.profile.max_tokens,
                  "thinking": blue.thinking, "move_assist": blue.move_assist,
                  "threat_assist": blue.threat_assist,
                  "strategy_guide": blue.strategy_guide},
