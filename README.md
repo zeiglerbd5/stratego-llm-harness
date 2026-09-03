@@ -12,7 +12,8 @@ See `CONTEXT.md` for the vocabulary and `docs/adr/` for the decisions.
 # one Game, local models, library openings (default)
 python3 run_game.py --red gpt-oss:20b --blue llama3:latest --variant barrage
 
-# a Match: paired Games, colours swapped, one pair per library opening
+# a Match: paired Games. Each pair is one position (Red's opening and Blue's
+# opening differ, never mirrored) played twice with the Models swapped.
 python3 run_match.py --a gpt-oss:20b --b gpt-oss:20b --pairs 3
 
 # a cloud model through OpenRouter (OPENROUTER_API_KEY in the environment)

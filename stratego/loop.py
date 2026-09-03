@@ -19,18 +19,21 @@ def play_game(red: Agent, blue: Agent, variant: str = "barrage",
               move_cap: int = 400, out: str | Path = "records/game.jsonl",
               seed: int = 0, verbose: bool = True,
               deployment: str = "model",
-              library_entry: str | None = None) -> dict:
+              openings: dict[str, str | None] | None = None) -> dict:
     """`deployment` is model | library | random.
 
-    `library` with a fixed `library_entry` gives both sides the same opening,
-    which is what a paired Game (colours swapped) needs to cancel setup luck.
+    `openings` names the library entry per colour, e.g.
+    {"R": "corner-fortress", "B": "far-corner"}. The two are never the same:
+    see `deployments.pair`. A paired Game swaps the Models between the seats
+    and keeps the openings with the seats, so the position is identical.
     """
     rng = random.Random(seed)
     for ag in (red, blue):
         ensure_context(ag.profile)      # before game_start, so it is recorded
+    chosen = lib.pair(variant, openings or {}, rng) if deployment == "library" else None
     rec = GameRecord(out, {
         "variant": variant, "move_cap": move_cap, "seed": seed,
-        "deployment_source": deployment, "library_entry": library_entry,
+        "deployment_source": deployment, "openings": chosen,
         "prompt_version": prompt_version(red.strategy_guide or blue.strategy_guide),
         "red": {"agent": red.name, "model": red.profile.name,
                 "served_as": red.profile.served_name,
@@ -52,7 +55,7 @@ def play_game(red: Agent, blue: Agent, variant: str = "barrage",
     contaminated = []
     for ag in (red, blue):
         if deployment == "library":
-            dep, entry = lib.get(variant, ag.color, library_entry, rng)
+            dep, entry = lib.get(variant, ag.color, chosen[ag.color], rng)
             why, attempts = f"library Deployment {entry!r}", []
         elif deployment == "random":
             dep, why, attempts = random_deployment(ag.color, variant, rng), "random", []

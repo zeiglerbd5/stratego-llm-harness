@@ -52,8 +52,10 @@ def main() -> None:
                     help="who writes the opening setup. Default 'library' gives "
                          "both sides a sound opening so the Game measures play "
                          "rather than setup; pass 'model' to benchmark setup skill")
-    ap.add_argument("--library-entry",
-                    help="name a library opening; both sides use it (paired Game)")
+    ap.add_argument("--red-opening", help="library opening for RED "
+                    "(default: random, never the same as BLUE's)")
+    ap.add_argument("--blue-opening", help="library opening for BLUE "
+                    "(default: random, never the same as RED's)")
     args = ap.parse_args()
 
     rp = profile_for(args.red, args.red_endpoint, args.max_tokens)
@@ -70,7 +72,7 @@ def main() -> None:
           f"{' +guide' if args.strategy_guide else ''}")
     summary = play_game(red, blue, args.variant, args.move_cap, args.out,
                         args.seed, deployment=args.deployment,
-                        library_entry=args.library_entry)
+                        openings={"R": args.red_opening, "B": args.blue_opening})
     print("\nRESULT:", summary)
     print("Record:", args.out)
     for p in (rp, bp):

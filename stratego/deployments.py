@@ -91,6 +91,34 @@ def names(variant: str) -> list[str]:
     return [e["name"] for e in LIBRARY[variant]]
 
 
+def pair(variant: str, wanted: dict[str, str | None],
+         rng: random.Random) -> dict[str, str]:
+    """An opening for each colour, never the same one for both.
+
+    The library is written back-row-first and rendered for either colour, so
+    the same entry for both sides is a mirror: every piece starts opposite its
+    own twin on the same file, the Marshals walk into each other on Move 3,
+    and the Game measures symmetry instead of play. A colour left None is
+    drawn at random from the entries the other colour is not using.
+    """
+    pool = names(variant)
+    if len(pool) < 2:
+        raise ValueError(f"the {variant} library needs two openings to pair")
+    chosen = {c: wanted.get(c) for c in ("R", "B")}
+    for c in ("R", "B"):
+        if chosen[c] and chosen[c] not in pool:
+            raise ValueError(f"no {variant} opening named {chosen[c]!r}; "
+                             f"have {pool}")
+    if chosen["R"] and chosen["R"] == chosen["B"]:
+        raise ValueError(f"both sides given {chosen['R']!r}: a mirrored Game "
+                         "is not a benchmark")
+    for c in ("R", "B"):
+        if not chosen[c]:
+            other = chosen[R.OPPONENT[c]]
+            chosen[c] = rng.choice([n for n in pool if n != other])
+    return chosen
+
+
 def validate_library() -> list[str]:
     """Every entry must be legal for both colours. Returns problems found."""
     problems = []

@@ -1,7 +1,11 @@
 """A Match: paired Games between two Agents that survive setup luck.
 
-Each pair plays one opening twice with colours swapped. Results are scored per
-Model (pooling both colours) and per colour (to expose orientation bias).
+Each pair plays one position twice with the Models swapped between the seats.
+Red's opening and Blue's opening differ within a position (the same entry on
+both sides is a mirror, and the Marshals simply walk into each other), and
+they stay with the seats across the swap so the position is identical. Results
+are scored per Model (pooling both colours) and per colour (to expose
+orientation bias).
 """
 from __future__ import annotations
 
@@ -23,14 +27,20 @@ def play_match(model_a: ModelProfile, model_b: ModelProfile, pairs: int,
                verbose: bool = True) -> dict:
     out_dir = Path(out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
-    openings = lib.names(variant)
+    library = lib.names(variant)
     games: list[dict] = []
 
     halted = False
     for i in range(pairs):
         if halted:
             break
-        entry = openings[i % len(openings)] if deployment == "library" else None
+        # Position i: Red plays entry i, Blue plays entry i+1, so consecutive
+        # pairs rotate through the library and no side ever mirrors the other.
+        if deployment == "library":
+            n = len(library)
+            position = {"R": library[i % n], "B": library[(i + 1) % n]}
+        else:
+            position = None
         seed = base_seed + i
         for swap in (False, True):
             red_m, blue_m = (model_b, model_a) if swap else (model_a, model_b)
@@ -47,11 +57,12 @@ def play_match(model_a: ModelProfile, model_b: ModelProfile, pairs: int,
             else:
                 if verbose:
                     print(f"\n=== pair {i} game {'b' if swap else 'a'}: "
-                          f"R={red_m.name} B={blue_m.name} opening={entry} seed={seed}")
+                          f"R={red_m.name} B={blue_m.name} openings={position} "
+                          f"seed={seed}")
                 try:
                     summary = play_game(red, blue, variant, move_cap, path, seed,
                                         verbose=verbose, deployment=deployment,
-                                        library_entry=entry)
+                                        openings=position)
                 except AdapterError as e:
                     # The Model server is gone. Keep what finished; a rerun
                     # with the same --out resumes from here.
@@ -61,7 +72,7 @@ def play_match(model_a: ModelProfile, model_b: ModelProfile, pairs: int,
                     break
             a = analyze(path)
             games.append({
-                "tag": tag, "file": str(path), "seed": seed, "opening": entry,
+                "tag": tag, "file": str(path), "seed": seed, "openings": position,
                 "red_model": red_m.name, "blue_model": blue_m.name,
                 "played": summary["result"], "adjudicated": summary["adjudicated_result"],
                 "adjudicated_reason": summary["adjudicated_reason"],
