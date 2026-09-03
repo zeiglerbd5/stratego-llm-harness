@@ -103,6 +103,7 @@ def aggregate(games: list[dict], a: str, b: str) -> dict:
                 "b": {"wins": 0, "losses": 0, "draws": 0, "games": 0}}
     by_color = {"R": 0, "B": 0, "draw": 0}
     pooled: dict[str, dict[str, list]] = {"a": {}, "b": {}}
+    rejections: dict[str, dict[str, int]] = {"a": {}, "b": {}}
 
     for g in games:
         res = g["adjudicated"]
@@ -122,10 +123,13 @@ def aggregate(games: list[dict], a: str, b: str) -> dict:
             for k, v in g["per_side"][color].items():
                 if isinstance(v, (int, float)) and v is not None:
                     pooled[model].setdefault(k, []).append(v)
+            for k, v in g["per_side"][color].get("rejections", {}).items():
+                rejections[model][k] = rejections[model].get(k, 0) + v
 
     means = {m: {k: round(sum(v) / len(v), 2) for k, v in stats.items() if v}
              for m, stats in pooled.items()}
     return {"by_model": by_model, "by_color": by_color, "means": means,
+            "rejections": rejections,
             "n_games": len(games), "names": {"a": a, "b": b}}
 
 
@@ -143,9 +147,16 @@ def format_report(r: dict, a: str, b: str) -> str:
     keys = [("shuffle_rate", "shuffle"), ("closest_to_enemy_flag", "closest→flag"),
             ("combats_initiated", "combats"), ("combat_won", "won"),
             ("combat_lost", "lost"), ("retries", "retries"),
-            ("thinking_tokens", "think tok"), ("seconds", "seconds")]
+            ("thinking_tokens", "think tok"), ("completion_tokens", "completion tok"),
+            ("seconds", "seconds")]
     lines.append(f"  {'mean per game':18s}{'a: '+a[:12]:>16s}{'b: '+b[:12]:>16s}")
     for k, label in keys:
         va = r["means"]["a"].get(k, "-"); vb = r["means"]["b"].get(k, "-")
         lines.append(f"  {label:18s}{str(va):>16s}{str(vb):>16s}")
+    rej = r.get("rejections", {})
+    if any(rej.values()):
+        lines.append("")
+        for role in ("a", "b"):
+            kinds = ", ".join(f"{k} {v}" for k, v in sorted(rej.get(role, {}).items()))
+            lines.append(f"  rejections {role}:      {kinds or 'none'}")
     return "\n".join(lines)

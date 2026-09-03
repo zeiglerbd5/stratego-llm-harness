@@ -137,6 +137,9 @@ def render(st: GameState, me: str, scratchpad: str = "",
         "",
         "BOARD  ('~' lake, '.' empty, '?' unknown enemy, '!' enemy of known rank - see ENEMY PIECES)",
         _grid(st, me),
+        # Named as well as drawn: a Model that misreads the grid has read a
+        # lake as empty and concluded the Legal Move List was wrong.
+        "LAKES (impassable, always empty): " + " ".join(sorted(R.LAKES, key=R.parse_square)),
         "",
         "YOUR PIECES: " + ", ".join(f"{p.square}={p.rank}" for p in mine),
     ]
@@ -175,6 +178,8 @@ def render(st: GameState, me: str, scratchpad: str = "",
 
     if move_assist == "full":
         body, n = _legal_by_piece(st, me)
-        parts += ["", f"LEGAL MOVES ({n}) - you must choose one of these:", body]
+        parts += ["", f"LEGAL MOVES ({n}) - this list is complete. A square not shown "
+                      "is unreachable this turn (lake, blocked, or Sec.5 Repetition). "
+                      "Choose one of these:", body]
 
     return "\n".join(parts)

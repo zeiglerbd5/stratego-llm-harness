@@ -32,7 +32,14 @@ class Piece:
 
 
 class IllegalMove(ValueError):
-    """Raised with a rule-citing message an Agent can act on."""
+    """Raised with a rule-citing message an Agent can act on, and a `kind`
+    the harness can count: bad_square | no_piece | not_yours | immobile |
+    no_move | lake | own_piece | repetition | scout_blocked | not_adjacent |
+    deployment."""
+
+    def __init__(self, message: str, kind: str = "other"):
+        super().__init__(message)
+        self.kind = kind
 
 
 @dataclass
@@ -151,35 +158,39 @@ class GameState:
         try:
             R.parse_square(mv.frm), R.parse_square(mv.to)
         except ValueError as e:
-            raise IllegalMove(f"{e}. Squares are a-j paired with 1-10, e.g. 'd7'.")
+            raise IllegalMove(f"{e}. Squares are a-j paired with 1-10, e.g. 'd7'.",
+                              "bad_square")
         p = self.at(mv.frm)
         if p is None:
-            raise IllegalMove(f"No piece on {mv.frm}.")
+            raise IllegalMove(f"No piece on {mv.frm}.", "no_piece")
         if p.color != color:
-            raise IllegalMove(f"The piece on {mv.frm} is not yours.")
+            raise IllegalMove(f"The piece on {mv.frm} is not yours.", "not_yours")
         if not p.mobile:
             raise IllegalMove(
-                f"{p.rank} on {mv.frm} can never move. See Rulebook Sec.3 Movement.")
+                f"{p.rank} on {mv.frm} can never move. See Rulebook Sec.3 Movement.",
+                "immobile")
         if mv.frm == mv.to:
-            raise IllegalMove("A Move must change square. Passing is not allowed.")
+            raise IllegalMove("A Move must change square. Passing is not allowed.",
+                              "no_move")
         if R.is_lake(mv.to):
             raise IllegalMove(
-                f"{mv.to} is a lake and cannot be entered. See Rulebook Sec.2 Board.")
+                f"{mv.to} is a lake and cannot be entered. See Rulebook Sec.2 Board.",
+                "lake")
         target = self.at(mv.to)
         if target and target.color == color:
-            raise IllegalMove(f"{mv.to} holds your own {target.rank}.")
+            raise IllegalMove(f"{mv.to} holds your own {target.rank}.", "own_piece")
         if mv not in self.legal_moves(color):
             if self._repetition_violation(p, mv):
                 raise IllegalMove(
                     f"{mv} shuffles this piece among squares it keeps returning to. "
-                    "See Rulebook Sec.5 Repetition.")
+                    "See Rulebook Sec.5 Repetition.", "repetition")
             if p.rank == "Scout":
                 raise IllegalMove(
                     f"{mv} is blocked: a Scout slides in a straight line through "
-                    "empty squares only. See Rulebook Sec.3 Movement.")
+                    "empty squares only. See Rulebook Sec.3 Movement.", "scout_blocked")
             raise IllegalMove(
                 f"{mv} is not a straight one-square step. Only Scouts move "
-                "further than one square. See Rulebook Sec.3 Movement.")
+                "further than one square. See Rulebook Sec.3 Movement.", "not_adjacent")
 
     # ---------- mutation ----------
 
@@ -246,11 +257,13 @@ def validate_deployment(dep: dict[str, str], color: str, variant: str) -> None:
     got: dict[str, int] = {}
     for sq, rank in dep.items():
         if rank not in want:
-            raise IllegalMove(f"{rank!r} is not a piece in the {variant} variant.")
+            raise IllegalMove(f"{rank!r} is not a piece in the {variant} variant.",
+                              "deployment")
         _, row = R.parse_square(sq)
         if row not in rows:
             raise IllegalMove(
-                f"{sq} is outside your territory (rows {rows[0]}-{rows[-1]}).")
+                f"{sq} is outside your territory (rows {rows[0]}-{rows[-1]}).",
+                "deployment")
         got[rank] = got.get(rank, 0) + 1
 
     # Name every wrong rank. "9 pieces, expected 8" tells a model nothing it can
@@ -265,7 +278,7 @@ def validate_deployment(dep: dict[str, str], color: str, variant: str) -> None:
     if problems:
         raise IllegalMove(
             f"You placed {len(dep)} pieces, need {sum(want.values())}. Wrong: "
-            + "; ".join(problems) + ".")
+            + "; ".join(problems) + ".", "deployment")
 
 
 def random_deployment(color: str, variant: str, rng: random.Random) -> dict[str, str]:

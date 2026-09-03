@@ -81,6 +81,9 @@ def play_game(red: Agent, blue: Agent, variant: str = "barrage",
             rec.write("forfeit", ply=st.ply, color=ag.color, agent=ag.name,
                       failure=turn.failure, substituted=str(substitute),
                       attempts=turn.attempts, seconds=turn.seconds,
+                      thinking_tokens=turn.thinking_tokens,
+                      thinking_tokens_source=turn.thinking_tokens_source,
+                      completion_tokens=turn.completion_tokens,
                       forfeits_so_far=forfeits[ag.color])
             if verbose:
                 print(f"  ply {st.ply:>3} {ag.color} FORFEIT ({turn.failure}) "
@@ -91,12 +94,18 @@ def play_game(red: Agent, blue: Agent, variant: str = "barrage",
             event = st.apply(substitute)
         else:
             event = st.apply(turn.move)
+            # Every attempt is written, not just the count: a rejected Move's
+            # error kind is the evidence for whether a Model misread the board
+            # or broke a rule, and it is gone if only the retry count survives.
             rec.write("move", ply=event["ply"], color=ag.color, agent=ag.name,
                       move=event["move"], rank=event["rank"],
                       combat=event["combat"], rationale=turn.rationale,
                       scratchpad=turn.scratchpad, reasoning=turn.reasoning,
                       thinking_tokens=turn.thinking_tokens,
-                      seconds=turn.seconds, retries=len(turn.attempts) - 1)
+                      thinking_tokens_source=turn.thinking_tokens_source,
+                      completion_tokens=turn.completion_tokens,
+                      seconds=turn.seconds, retries=len(turn.attempts) - 1,
+                      attempts=turn.attempts)
             if verbose:
                 c = event["combat"]
                 extra = (f"  [{c['attacker']} x {c['defender']} -> {c['outcome']}]"

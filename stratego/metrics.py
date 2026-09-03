@@ -80,6 +80,7 @@ def analyze(path: str | Path) -> dict:
     per: dict[str, dict] = {}
     for c in ("R", "B"):
         mv = [m for m in moves if m["color"] == c]
+        turns = [r for r in recs if r["kind"] in ("move", "forfeit") and r["color"] == c]
         combats = [m for m in mv if m["combat"]]
         won = sum(1 for m in combats if m["combat"]["outcome"] == "defender")
         lost = sum(1 for m in combats if m["combat"]["outcome"] == "attacker")
@@ -101,6 +102,28 @@ def analyze(path: str | Path) -> dict:
             recent[to] = hist + [frm]
             recent.pop(frm, None)
 
+        # Why Moves were rejected, by IllegalMove kind (or the failure class
+        # for parse and budget failures). Counts every attempt, forfeits included.
+        rejections: dict[str, int] = {}
+        for t in turns:
+            for a in t.get("attempts", []):
+                if not a.get("ok"):
+                    kind = a.get("error_kind") or a.get("failure") or "unknown"
+                    rejections[kind] = rejections.get(kind, 0) + 1
+
+        # Records written before thinking_tokens_source existed stored the
+        # provider's completion count under thinking_tokens. Read them as what
+        # they were rather than as thinking, which they never measured.
+        counted = all("thinking_tokens_source" in m for m in mv)
+        if counted:
+            think = sum(m["thinking_tokens"] for m in mv)
+            completion = sum(m["completion_tokens"] for m in mv)
+            source = max({m["thinking_tokens_source"] for m in mv},
+                         key=lambda s: {"estimate": 3, "tokenizer": 2,
+                                        "provider": 1}.get(s, 0)) if mv else "none"
+        else:
+            think, completion, source = None, sum(m["thinking_tokens"] for m in mv), "uncounted"
+
         per[c] = {
             "moves": len(mv),
             "piece_types_used": len({m["rank"] for m in mv}),
@@ -110,7 +133,10 @@ def analyze(path: str | Path) -> dict:
             "shuffle_moves": shuffles,
             "shuffle_rate": round(shuffles / len(mv), 2) if mv else 0.0,
             "retries": sum(m["retries"] for m in mv),
-            "thinking_tokens": sum(m["thinking_tokens"] for m in mv),
+            "rejections": rejections,
+            "thinking_tokens": think,
+            "thinking_tokens_source": source,
+            "completion_tokens": completion,
             "seconds": round(sum(m["seconds"] for m in mv), 1),
             "reasoning_captured": sum(1 for m in mv if m["reasoning"]),
         }
@@ -140,9 +166,17 @@ def format_report(a: dict) -> str:
             ("combats", "combats_initiated"), ("combat won", "combat_won"),
             ("combat lost", "combat_lost"), ("shuffle rate", "shuffle_rate"),
             ("closest→flag", "closest_to_enemy_flag"), ("retries", "retries"),
-            ("think tokens", "thinking_tokens"), ("seconds", "seconds")]
+            ("think tokens", "thinking_tokens"), ("completion tok", "completion_tokens"),
+            ("seconds", "seconds")]
+    fmt = lambda v: "n/a" if v is None else str(v)
     for label, key in rows:
-        lines.append(f"  {label:14s}{str(p['R'][key]):>10s}{str(p['B'][key]):>10s}")
+        lines.append(f"  {label:14s}{fmt(p['R'][key]):>10s}{fmt(p['B'][key]):>10s}")
+    src = {p[c]["thinking_tokens_source"] for c in ("R", "B")}
+    lines.append(f"  think source   {'/'.join(sorted(src))}")
+    rej = {c: ", ".join(f"{k} {v}" for k, v in sorted(p[c]["rejections"].items()))
+           for c in ("R", "B")}
+    if any(rej.values()):
+        lines.append(f"  rejections     R: {rej['R'] or 'none'}   B: {rej['B'] or 'none'}")
     if a["failures"]:
         lines.append(f"  failures: {a['failures']}  forfeits: {a['forfeits']}")
     if a["deployment_substituted"]:

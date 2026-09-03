@@ -2,7 +2,8 @@
 
 OpenRouter and Ollama both return the native reasoning trace on
 `choices[].message.reasoning`, so a single transport serves cloud and local.
-Residency control is the one thing that needs Ollama's native API.
+Ollama's native API is needed for two things only: residency control, and
+counting the tokens in that trace (see `_thinking_tokens`).
 """
 from __future__ import annotations
 
@@ -38,8 +39,10 @@ class Completion:
     reasoning: str
     finish_reason: str
     prompt_tokens: int
-    completion_tokens: int
+    completion_tokens: int              # the provider's own count, recorded as-is
     seconds: float
+    thinking_tokens: int = 0            # tokens in the native reasoning trace
+    thinking_tokens_source: str = "none"    # provider | tokenizer | estimate | none
 
     @property
     def budget_exhausted(self) -> bool:
@@ -98,14 +101,74 @@ def complete(profile: ModelProfile, messages: list[dict], schema: dict | None,
     choice = raw["choices"][0]
     msg = choice["message"]
     usage = raw.get("usage") or {}
-    return Completion(
+    comp = Completion(
         content=msg.get("content") or "",
         reasoning=msg.get("reasoning") or "",
         finish_reason=choice.get("finish_reason") or "",
         prompt_tokens=usage.get("prompt_tokens") or 0,
         completion_tokens=usage.get("completion_tokens") or 0,
-        seconds=round(dt, 2),
+        seconds=round(dt, 2),           # the Model's time only; counting is excluded
     )
+    comp.thinking_tokens, comp.thinking_tokens_source = \
+        _thinking_tokens(profile, usage, comp.reasoning)
+    return comp
+
+
+def _thinking_tokens(profile: ModelProfile, usage: dict,
+                     reasoning: str) -> tuple[int, str]:
+    """Tokens spent on the native reasoning trace, and where the number came from.
+
+    Provider counters cannot be trusted for this. OpenRouter reports
+    `completion_tokens_details.reasoning_tokens` for Models that expose it.
+    Ollama's `completion_tokens` includes the trace for a plain request but
+    drops it entirely under strict `response_format` (measured on gpt-oss:20b:
+    216 reported for a Move whose visible JSON alone was ~214 tokens, with a
+    444-character trace uncounted). So on Ollama the trace is tokenized
+    separately, exactly, by `count_tokens`. The estimate is a last resort and
+    is labelled as such: ADR-0001 equalizes on this number.
+    """
+    details = usage.get("completion_tokens_details") or {}
+    if details.get("reasoning_tokens"):
+        return int(details["reasoning_tokens"]), "provider"
+    if not reasoning.strip():
+        return 0, "none"
+    n = count_tokens(profile, reasoning)
+    if n is not None:
+        return n, "tokenizer"
+    # Reasoning text is dense (square names, arithmetic): measured ~2.9
+    # characters per token on gpt-oss:20b, against ~4 for prose.
+    return round(len(reasoning) / 3), "estimate"
+
+
+def count_tokens(profile: ModelProfile, text: str) -> int | None:
+    """Exact token count of `text` under a local Model's own tokenizer, or
+    None when unavailable (cloud endpoint, or the call failed).
+
+    Ollama has no tokenize endpoint. A raw generate of one token reports
+    `prompt_eval_count`, which is the full count even when the prefix is
+    cached (measured stable across repeats) and costs ~0.25 s when warm.
+    """
+    root = _ollama_root(profile)
+    if root is None or not text:
+        return None
+    req = urllib.request.Request(
+        root + "/api/generate",
+        data=json.dumps({"model": profile.name, "prompt": text, "raw": True,
+                         "stream": False, "options": {"num_predict": 1}}).encode(),
+        headers={"Content-Type": "application/json"})
+    try:
+        raw = json.loads(urllib.request.urlopen(req, timeout=60).read())
+    except Exception:
+        return None
+    n = raw.get("prompt_eval_count")
+    return int(n) if n else None
+
+
+def _ollama_root(profile: ModelProfile) -> str | None:
+    """The native-API base for a local Model, or None for a cloud endpoint."""
+    if "11434" not in profile.base_url:
+        return None
+    return profile.base_url.rstrip("/").removesuffix("/v1")
 
 
 CONNECT_RETRIES = 6          # a restarting local server needs a few seconds
@@ -132,9 +195,9 @@ def _send(req: urllib.request.Request, timeout: int, name: str) -> dict:
 
 def unload(profile: ModelProfile) -> None:
     """Free a local Model's RAM. keep_alive is absent from the /v1 schema."""
-    if "11434" not in profile.base_url:
+    root = _ollama_root(profile)
+    if root is None:
         return
-    root = profile.base_url.rstrip("/").removesuffix("/v1")
     req = urllib.request.Request(
         root + "/api/generate",
         data=json.dumps({"model": profile.name, "keep_alive": 0}).encode(),

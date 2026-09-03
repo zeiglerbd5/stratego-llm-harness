@@ -58,15 +58,35 @@ GLYPH_TO_RANK = {v: k for k, v in R.GLYPH.items()}
 
 @dataclass
 class Turn:
-    """Everything one turn produced, win or lose."""
+    """Everything one turn produced, win or lose. Token counts sum every
+    attempt, because a rejected attempt's thinking was still spent."""
     move: Move | None
     rationale: str
     scratchpad: str
     attempts: list[dict]
     reasoning: str = ""
-    thinking_tokens: int = 0
+    thinking_tokens: int = 0            # native reasoning trace (ADR-0001's axis)
+    thinking_tokens_source: str = "none"
+    completion_tokens: int = 0          # the provider's own count, as reported
     seconds: float = 0.0
     failure: str | None = None      # illegal_move | parse_failure | budget_exhausted
+
+
+# Least trustworthy source wins, so one estimated attempt marks the whole turn.
+_SOURCE_RANK = {"estimate": 3, "tokenizer": 2, "provider": 1, "none": 0}
+
+
+def _merge_sources(sources: set[str]) -> str:
+    return max(sources, key=lambda s: _SOURCE_RANK.get(s, 0)) if sources else "none"
+
+
+def _attempt(i: int, comp: Completion) -> dict:
+    return {"attempt": i, "seconds": comp.seconds,
+            "completion_tokens": comp.completion_tokens,
+            "thinking_tokens": comp.thinking_tokens,
+            "thinking_tokens_source": comp.thinking_tokens_source,
+            "finish_reason": comp.finish_reason,
+            "reasoning_chars": len(comp.reasoning)}
 
 
 class Agent:
@@ -146,9 +166,7 @@ class Agent:
         err = ""
         for i in range(self.retries):
             comp = self._ask(prompt + err, DEPLOY_SCHEMA)
-            rec = {"attempt": i, "seconds": comp.seconds,
-                   "completion_tokens": comp.completion_tokens,
-                   "finish_reason": comp.finish_reason}
+            rec = _attempt(i, comp)
             try:
                 data = self._parse(comp)
                 dep = self._rows_to_deployment(data["rows"], rows)
@@ -159,6 +177,9 @@ class Agent:
             except (json.JSONDecodeError, KeyError, ValueError, IllegalMove) as e:
                 rec["ok"] = False
                 rec["error"] = str(e)[:300]
+                # IllegalMove and JSONDecodeError are both ValueErrors: ask, don't order.
+                rec["error_kind"] = getattr(e, "kind", None) or (
+                    "parse" if isinstance(e, json.JSONDecodeError) else "format")
                 attempts.append(rec)
                 err = (f"\n\nYour previous attempt was rejected: {e}\n"
                       f"Reply with exactly 4 rows of 10 cells each. Correct it.")
@@ -207,6 +228,8 @@ class Agent:
         feedback = ""
         budget = None
         total_think = 0
+        total_completion = 0
+        sources: set[str] = set()
         total_secs = 0.0
         last_reasoning = ""
         failure = None
@@ -214,12 +237,11 @@ class Agent:
         for i in range(self.retries):
             comp = self._ask(prompt + feedback, MOVE_SCHEMA, budget)
             total_secs += comp.seconds
-            total_think += comp.completion_tokens
+            total_think += comp.thinking_tokens
+            total_completion += comp.completion_tokens
+            sources.add(comp.thinking_tokens_source)
             last_reasoning = comp.reasoning or last_reasoning
-            rec = {"attempt": i, "seconds": comp.seconds,
-                   "completion_tokens": comp.completion_tokens,
-                   "finish_reason": comp.finish_reason,
-                   "reasoning_chars": len(comp.reasoning)}
+            rec = _attempt(i, comp)
 
             if comp.budget_exhausted:
                 # Spent its thinking budget and returned nothing. This is not an
@@ -250,6 +272,7 @@ class Agent:
             except IllegalMove as e:
                 rec["ok"] = False
                 rec["failure"] = "illegal_move"
+                rec["error_kind"] = e.kind
                 rec["error"] = str(e)
                 rec["move"] = str(mv)
                 attempts.append(rec)
@@ -262,7 +285,10 @@ class Agent:
             attempts.append(rec)
             self.scratchpad = str(data.get("scratchpad", ""))[:1200]
             return Turn(mv, str(data.get("rationale", "")), self.scratchpad,
-                        attempts, last_reasoning, total_think, round(total_secs, 2))
+                        attempts, last_reasoning, total_think,
+                        _merge_sources(sources), total_completion,
+                        round(total_secs, 2))
 
         return Turn(None, "", self.scratchpad, attempts, last_reasoning,
-                    total_think, round(total_secs, 2), failure=failure)
+                    total_think, _merge_sources(sources), total_completion,
+                    round(total_secs, 2), failure=failure)
