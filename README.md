@@ -20,6 +20,9 @@ python3 run_match.py --a gpt-oss:20b --b gpt-oss:20b --pairs 3
 python3 run_game.py --red openrouter/anthropic/claude-sonnet-4.6 --blue gpt-oss:20b \
     --deployment model --thinking standard
 
+# a Claude model through the Claude API directly (ANTHROPIC_API_KEY)
+python3 run_match.py --a anthropic/claude-sonnet-5 --b gpt-oss:20b --thinking brief
+
 # metrics and material adjudication over any Game Record
 python3 -m stratego.metrics records/*.jsonl
 ```

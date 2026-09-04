@@ -1,10 +1,15 @@
-"""One OpenAI-compatible client for every Model.
+"""One client per wire format, stdlib only.
 
-OpenRouter and Ollama both return the native reasoning trace on
-`choices[].message.reasoning`, so a single transport serves cloud and local.
+OpenRouter and Ollama speak the OpenAI shape and return the native reasoning
+trace on `choices[].message.reasoning`, so one transport serves both.
 Ollama's native API is needed for three things only: residency control,
 counting the tokens in that trace (see `_thinking_tokens`), and giving a local
 Model a context window big enough to think in (see `ensure_context`).
+
+The Claude API speaks the Messages shape (`_complete_anthropic`): system as a
+cached block, adaptive thinking with an effort level, the JSON schema under
+`output_config.format`, and no sampling parameters. Both paths produce the
+same `Completion`.
 """
 from __future__ import annotations
 
@@ -20,12 +25,16 @@ from dataclasses import dataclass, field
 DEFAULT_EFFORT = {"off": "none", "brief": "low", "standard": "medium", "deep": "high"}
 
 
+ANTHROPIC_VERSION = "2023-06-01"
+
+
 @dataclass
 class ModelProfile:
     """What the Capability Probe learned about a Model."""
     name: str
     base_url: str = "http://127.0.0.1:11434/v1"
     api_key: str | None = None
+    api: str = "openai"                    # openai | anthropic
     effort_map: dict[str, str] = field(default_factory=lambda: dict(DEFAULT_EFFORT))
     honors_effort: bool = True
     supports_thinking: bool = True         # some Models 400 if the field is sent
@@ -68,6 +77,8 @@ class AdapterError(RuntimeError):
 def complete(profile: ModelProfile, messages: list[dict], schema: dict | None,
              thinking: str = "standard", max_tokens: int | None = None,
              timeout: int = 600) -> Completion:
+    if profile.api == "anthropic":
+        return _complete_anthropic(profile, messages, schema, thinking, max_tokens, timeout)
     ensure_context(profile)
     body: dict = {
         "model": _api_name(profile),
@@ -158,6 +169,122 @@ def ensure_context(profile: ModelProfile) -> None:
 
 def _api_name(profile: ModelProfile) -> str:
     return profile.served_name or profile.name
+
+
+def _complete_anthropic(profile: ModelProfile, messages: list[dict],
+                        schema: dict | None, thinking: str,
+                        max_tokens: int | None, timeout: int) -> Completion:
+    """The Messages API. Thinking Policy maps to `output_config.effort`
+    under adaptive thinking (`off` disables it). Sonnet 5 and later reject
+    temperature, so none is sent: the OpenAI path's 0.3 is not reproducible
+    here and the Game Record shows which path a Model played through.
+
+    Thinking tokens: `usage.output_tokens` bills the thinking and the visible
+    answer together, and the returned thinking block is a summary, not the
+    trace. The visible answer is counted exactly by the free count_tokens
+    endpoint and subtracted, so the number is the provider's own tokenizer
+    within a few tokens of message framing.
+    """
+    system = "\n\n".join(m["content"] for m in messages if m["role"] == "system")
+    turns = [{"role": m["role"], "content": m["content"]}
+             for m in messages if m["role"] != "system"]
+    body: dict = {"model": profile.name,
+                  "max_tokens": max_tokens or profile.max_tokens,
+                  "messages": turns}
+    if system:
+        # The Rulebook is identical every Move of a Game: cache it.
+        body["system"] = [{"type": "text", "text": system,
+                           "cache_control": {"type": "ephemeral"}}]
+    effort = profile.effort_map.get(thinking)
+    thinking_on = bool(effort) and effort != "none" and profile.supports_thinking
+    if thinking_on:
+        body["thinking"] = {"type": "adaptive", "display": "summarized"}
+        body["output_config"] = {"effort": effort}
+    else:
+        body["thinking"] = {"type": "disabled"}
+    if schema and profile.supports_schema:
+        body.setdefault("output_config", {})["format"] = {
+            "type": "json_schema", "schema": schema}
+
+    req = urllib.request.Request(
+        profile.base_url.rstrip("/") + "/v1/messages",
+        data=json.dumps(body).encode(), headers=_anthropic_headers(profile))
+    t0 = time.time()
+    raw = _send_anthropic(req, timeout, profile.name)
+    dt = time.time() - t0
+
+    blocks = raw.get("content") or []
+    text = "".join(b.get("text", "") for b in blocks if b.get("type") == "text")
+    summary = "\n".join(b.get("thinking", "") for b in blocks
+                        if b.get("type") == "thinking" and b.get("thinking"))
+    stop = raw.get("stop_reason") or ""
+    finish = {"end_turn": "stop", "stop_sequence": "stop", "max_tokens": "length"}.get(stop, stop)
+    usage = raw.get("usage") or {}
+    prompt_tokens = sum(usage.get(k) or 0 for k in
+                        ("input_tokens", "cache_read_input_tokens", "cache_creation_input_tokens"))
+    output_tokens = usage.get("output_tokens") or 0
+    comp = Completion(content=text, reasoning=summary, finish_reason=finish,
+                      prompt_tokens=prompt_tokens, completion_tokens=output_tokens,
+                      seconds=round(dt, 2))
+    if not thinking_on:
+        comp.thinking_tokens, comp.thinking_tokens_source = 0, "none"
+    else:
+        visible = _anthropic_count(profile, text) if text.strip() else 0
+        if visible is None:
+            comp.thinking_tokens = max(output_tokens - round(len(text) / 4), 0)
+            comp.thinking_tokens_source = "estimate"
+        else:
+            comp.thinking_tokens = max(output_tokens - visible, 0)
+            comp.thinking_tokens_source = "provider"
+    return comp
+
+
+def _anthropic_headers(profile: ModelProfile) -> dict:
+    return {"Content-Type": "application/json",
+            "x-api-key": profile.api_key or "",
+            "anthropic-version": ANTHROPIC_VERSION}
+
+
+def _anthropic_count(profile: ModelProfile, text: str) -> int | None:
+    """Exact token count of `text` under the Model's tokenizer, via the free
+    count_tokens endpoint, or None if the call failed."""
+    req = urllib.request.Request(
+        profile.base_url.rstrip("/") + "/v1/messages/count_tokens",
+        data=json.dumps({"model": profile.name,
+                         "messages": [{"role": "user", "content": text}]}).encode(),
+        headers=_anthropic_headers(profile))
+    try:
+        raw = json.loads(urllib.request.urlopen(req, timeout=60).read())
+        return int(raw["input_tokens"])
+    except Exception:
+        return None
+
+
+ANTHROPIC_RETRY_STATUS = (429, 500, 502, 503, 529)    # 529 is "overloaded"
+
+
+def _send_anthropic(req: urllib.request.Request, timeout: int, name: str) -> dict:
+    """POST with retry on rate limits, overload, and connection failures.
+    Other 4xx propagate immediately with the API's own message."""
+    delay = 2.0
+    for attempt in range(CONNECT_RETRIES):
+        try:
+            return json.loads(urllib.request.urlopen(req, timeout=timeout).read())
+        except urllib.error.HTTPError as e:
+            detail = e.read()[:300]
+            if e.code in ANTHROPIC_RETRY_STATUS and attempt < CONNECT_RETRIES - 1:
+                wait = e.headers.get("retry-after")
+                time.sleep(float(wait) if wait else delay)
+                delay *= 2
+                continue
+            raise AdapterError(f"{name}: HTTP {e.code} {detail!r}") from e
+        except (urllib.error.URLError, ConnectionError, TimeoutError, OSError) as e:
+            if attempt == CONNECT_RETRIES - 1:
+                raise AdapterError(f"{name}: unreachable after "
+                                   f"{CONNECT_RETRIES} attempts: {e}") from e
+            time.sleep(delay)
+            delay *= 2
+    raise AdapterError(f"{name}: unreachable")
 
 
 def _thinking_tokens(profile: ModelProfile, usage: dict,

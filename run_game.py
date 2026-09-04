@@ -14,15 +14,23 @@ from stratego.loop import play_game
 
 OLLAMA = "http://127.0.0.1:11434/v1"
 OPENROUTER = "https://openrouter.ai/api/v1"
+ANTHROPIC = "https://api.anthropic.com"
 
 
 def profile_for(spec: str, endpoint: str | None,
                 max_tokens: int = 4000) -> ModelProfile:
-    """'llama3:latest' -> local; 'openrouter/anthropic/claude-...' -> cloud."""
+    """'llama3:latest' -> local; 'openrouter/<vendor>/<model>' -> OpenRouter;
+    'anthropic/claude-sonnet-5' -> the Claude API directly."""
+    # Cloud endpoints manage their own context; context_tokens is Ollama-only.
+    if spec.startswith("anthropic/"):
+        return ModelProfile(spec.removeprefix("anthropic/"), ANTHROPIC,
+                            os.environ.get("ANTHROPIC_API_KEY"),
+                            max_tokens=max_tokens, api="anthropic",
+                            context_tokens=None)
     if spec.startswith("openrouter/"):
         return ModelProfile(spec.removeprefix("openrouter/"), OPENROUTER,
                             os.environ.get("OPENROUTER_API_KEY"),
-                            max_tokens=max_tokens)
+                            max_tokens=max_tokens, context_tokens=None)
     return ModelProfile(spec, endpoint or OLLAMA, max_tokens=max_tokens)
 
 
