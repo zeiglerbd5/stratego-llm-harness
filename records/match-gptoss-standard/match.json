@@ -1,0 +1,488 @@
+{
+ "model_a": "gpt-oss:20b",
+ "model_b": "gpt-oss:20b",
+ "variant": "barrage",
+ "thinking": "standard",
+ "max_tokens": 16000,
+ "context_tokens": 32768,
+ "served_as": "gpt-oss:20b-ctx32k",
+ "move_cap": 60,
+ "games": [
+  {
+   "tag": "p0a",
+   "file": "/Users/brettzeigler/Stratego/records/match-gptoss-standard/p0a.jsonl",
+   "seed": 100,
+   "openings": {
+    "R": "corner-fortress",
+    "B": "far-corner"
+   },
+   "red_model": "gpt-oss:20b",
+   "blue_model": "gpt-oss:20b",
+   "played": "draw",
+   "adjudicated": "draw",
+   "adjudicated_reason": "material level (+0)",
+   "material": {
+    "R": 19,
+    "B": 19
+   },
+   "plies": 60,
+   "per_side": {
+    "R": {
+     "moves": 30,
+     "piece_types_used": 5,
+     "combats_initiated": 1,
+     "combat_won": 0,
+     "combat_lost": 1,
+     "combat_traded": 0,
+     "closest_to_enemy_flag": 1,
+     "shuffle_moves": 5,
+     "shuffle_rate": 0.17,
+     "retries": 1,
+     "rejections": {
+      "not_yours": 1
+     },
+     "thinking_tokens": 90735,
+     "thinking_tokens_source": "tokenizer",
+     "completion_tokens": 5101,
+     "seconds": 1918.3,
+     "reasoning_captured": 30
+    },
+    "B": {
+     "moves": 30,
+     "piece_types_used": 6,
+     "combats_initiated": 3,
+     "combat_won": 0,
+     "combat_lost": 1,
+     "combat_traded": 2,
+     "closest_to_enemy_flag": 7,
+     "shuffle_moves": 4,
+     "shuffle_rate": 0.13,
+     "retries": 4,
+     "rejections": {
+      "own_piece": 2,
+      "not_adjacent": 1,
+      "budget_exhausted:budget": 1
+     },
+     "thinking_tokens": 104350,
+     "thinking_tokens_source": "tokenizer",
+     "completion_tokens": 22047,
+     "seconds": 2211.0,
+     "reasoning_captured": 30
+    }
+   },
+   "failures": {
+    "illegal_move": 4,
+    "parse_failure": 0,
+    "budget_exhausted": 1
+   }
+  },
+  {
+   "tag": "p0b",
+   "file": "/Users/brettzeigler/Stratego/records/match-gptoss-standard/p0b.jsonl",
+   "seed": 100,
+   "openings": {
+    "R": "corner-fortress",
+    "B": "far-corner"
+   },
+   "red_model": "gpt-oss:20b",
+   "blue_model": "gpt-oss:20b",
+   "played": "B",
+   "adjudicated": "B",
+   "adjudicated_reason": "no_legal_moves",
+   "material": {
+    "R": 4,
+    "B": 24
+   },
+   "plies": 54,
+   "per_side": {
+    "R": {
+     "moves": 27,
+     "piece_types_used": 6,
+     "combats_initiated": 0,
+     "combat_won": 0,
+     "combat_lost": 0,
+     "combat_traded": 0,
+     "closest_to_enemy_flag": 3,
+     "shuffle_moves": 4,
+     "shuffle_rate": 0.15,
+     "retries": 3,
+     "rejections": {
+      "budget_exhausted:budget": 2,
+      "scout_blocked": 1
+     },
+     "thinking_tokens": 110939,
+     "thinking_tokens_source": "tokenizer",
+     "completion_tokens": 36189,
+     "seconds": 2342.5,
+     "reasoning_captured": 27
+    },
+    "B": {
+     "moves": 27,
+     "piece_types_used": 5,
+     "combats_initiated": 9,
+     "combat_won": 6,
+     "combat_lost": 3,
+     "combat_traded": 0,
+     "closest_to_enemy_flag": 3,
+     "shuffle_moves": 8,
+     "shuffle_rate": 0.3,
+     "retries": 0,
+     "rejections": {},
+     "thinking_tokens": 64212,
+     "thinking_tokens_source": "tokenizer",
+     "completion_tokens": 4226,
+     "seconds": 1389.8,
+     "reasoning_captured": 27
+    }
+   },
+   "failures": {
+    "illegal_move": 1,
+    "parse_failure": 0,
+    "budget_exhausted": 2
+   }
+  },
+  {
+   "tag": "p1a",
+   "file": "/Users/brettzeigler/Stratego/records/match-gptoss-standard/p1a.jsonl",
+   "seed": 101,
+   "openings": {
+    "R": "far-corner",
+    "B": "centre-guard"
+   },
+   "red_model": "gpt-oss:20b",
+   "blue_model": "gpt-oss:20b",
+   "played": "draw",
+   "adjudicated": "B",
+   "adjudicated_reason": "material -9",
+   "material": {
+    "R": 19,
+    "B": 28
+   },
+   "plies": 60,
+   "per_side": {
+    "R": {
+     "moves": 30,
+     "piece_types_used": 6,
+     "combats_initiated": 1,
+     "combat_won": 0,
+     "combat_lost": 1,
+     "combat_traded": 0,
+     "closest_to_enemy_flag": 4,
+     "shuffle_moves": 5,
+     "shuffle_rate": 0.17,
+     "retries": 0,
+     "rejections": {},
+     "thinking_tokens": 92070,
+     "thinking_tokens_source": "tokenizer",
+     "completion_tokens": 5069,
+     "seconds": 1943.1,
+     "reasoning_captured": 30
+    },
+    "B": {
+     "moves": 30,
+     "piece_types_used": 6,
+     "combats_initiated": 3,
+     "combat_won": 1,
+     "combat_lost": 1,
+     "combat_traded": 1,
+     "closest_to_enemy_flag": 1,
+     "shuffle_moves": 5,
+     "shuffle_rate": 0.17,
+     "retries": 3,
+     "rejections": {
+      "budget_exhausted:budget": 3
+     },
+     "thinking_tokens": 153370,
+     "thinking_tokens_source": "tokenizer",
+     "completion_tokens": 52588,
+     "seconds": 3170.6,
+     "reasoning_captured": 30
+    }
+   },
+   "failures": {
+    "illegal_move": 0,
+    "parse_failure": 0,
+    "budget_exhausted": 3
+   }
+  },
+  {
+   "tag": "p1b",
+   "file": "/Users/brettzeigler/Stratego/records/match-gptoss-standard/p1b.jsonl",
+   "seed": 101,
+   "openings": {
+    "R": "far-corner",
+    "B": "centre-guard"
+   },
+   "red_model": "gpt-oss:20b",
+   "blue_model": "gpt-oss:20b",
+   "played": "draw",
+   "adjudicated": "R",
+   "adjudicated_reason": "material +6",
+   "material": {
+    "R": 14,
+    "B": 8
+   },
+   "plies": 60,
+   "per_side": {
+    "R": {
+     "moves": 30,
+     "piece_types_used": 6,
+     "combats_initiated": 1,
+     "combat_won": 1,
+     "combat_lost": 0,
+     "combat_traded": 0,
+     "closest_to_enemy_flag": 2,
+     "shuffle_moves": 2,
+     "shuffle_rate": 0.07,
+     "retries": 2,
+     "rejections": {
+      "budget_exhausted:budget": 1,
+      "not_adjacent": 1
+     },
+     "thinking_tokens": 132608,
+     "thinking_tokens_source": "tokenizer",
+     "completion_tokens": 21216,
+     "seconds": 2743.7,
+     "reasoning_captured": 30
+    },
+    "B": {
+     "moves": 29,
+     "piece_types_used": 6,
+     "combats_initiated": 4,
+     "combat_won": 0,
+     "combat_lost": 0,
+     "combat_traded": 4,
+     "closest_to_enemy_flag": 8,
+     "shuffle_moves": 7,
+     "shuffle_rate": 0.24,
+     "retries": 1,
+     "rejections": {
+      "not_adjacent": 1,
+      "own_piece": 2,
+      "budget_exhausted:budget": 1
+     },
+     "thinking_tokens": 90409,
+     "thinking_tokens_source": "tokenizer",
+     "completion_tokens": 4885,
+     "seconds": 1904.1,
+     "reasoning_captured": 29
+    }
+   },
+   "failures": {
+    "illegal_move": 4,
+    "parse_failure": 0,
+    "budget_exhausted": 2
+   }
+  },
+  {
+   "tag": "p2a",
+   "file": "/Users/brettzeigler/Stratego/records/match-gptoss-standard/p2a.jsonl",
+   "seed": 102,
+   "openings": {
+    "R": "centre-guard",
+    "B": "corner-fortress"
+   },
+   "red_model": "gpt-oss:20b",
+   "blue_model": "gpt-oss:20b",
+   "played": "B",
+   "adjudicated": "B",
+   "adjudicated_reason": "flag_captured",
+   "material": {
+    "R": 10,
+    "B": 28
+   },
+   "plies": 60,
+   "per_side": {
+    "R": {
+     "moves": 30,
+     "piece_types_used": 6,
+     "combats_initiated": 4,
+     "combat_won": 1,
+     "combat_lost": 2,
+     "combat_traded": 1,
+     "closest_to_enemy_flag": 1,
+     "shuffle_moves": 11,
+     "shuffle_rate": 0.37,
+     "retries": 2,
+     "rejections": {
+      "budget_exhausted:budget": 2
+     },
+     "thinking_tokens": 116043,
+     "thinking_tokens_source": "tokenizer",
+     "completion_tokens": 36594,
+     "seconds": 2421.1,
+     "reasoning_captured": 30
+    },
+    "B": {
+     "moves": 30,
+     "piece_types_used": 3,
+     "combats_initiated": 3,
+     "combat_won": 3,
+     "combat_lost": 0,
+     "combat_traded": 0,
+     "closest_to_enemy_flag": 0,
+     "shuffle_moves": 6,
+     "shuffle_rate": 0.2,
+     "retries": 1,
+     "rejections": {
+      "budget_exhausted:budget": 1
+     },
+     "thinking_tokens": 116017,
+     "thinking_tokens_source": "tokenizer",
+     "completion_tokens": 21023,
+     "seconds": 2430.9,
+     "reasoning_captured": 30
+    }
+   },
+   "failures": {
+    "illegal_move": 0,
+    "parse_failure": 0,
+    "budget_exhausted": 3
+   }
+  },
+  {
+   "tag": "p2b",
+   "file": "/Users/brettzeigler/Stratego/records/match-gptoss-standard/p2b.jsonl",
+   "seed": 102,
+   "openings": {
+    "R": "centre-guard",
+    "B": "corner-fortress"
+   },
+   "red_model": "gpt-oss:20b",
+   "blue_model": "gpt-oss:20b",
+   "played": "draw",
+   "adjudicated": "B",
+   "adjudicated_reason": "material -13",
+   "material": {
+    "R": 10,
+    "B": 23
+   },
+   "plies": 60,
+   "per_side": {
+    "R": {
+     "moves": 30,
+     "piece_types_used": 6,
+     "combats_initiated": 5,
+     "combat_won": 1,
+     "combat_lost": 2,
+     "combat_traded": 2,
+     "closest_to_enemy_flag": 3,
+     "shuffle_moves": 7,
+     "shuffle_rate": 0.23,
+     "retries": 1,
+     "rejections": {
+      "not_adjacent": 1
+     },
+     "thinking_tokens": 110266,
+     "thinking_tokens_source": "tokenizer",
+     "completion_tokens": 4459,
+     "seconds": 2290.0,
+     "reasoning_captured": 30
+    },
+    "B": {
+     "moves": 30,
+     "piece_types_used": 6,
+     "combats_initiated": 1,
+     "combat_won": 1,
+     "combat_lost": 0,
+     "combat_traded": 0,
+     "closest_to_enemy_flag": 4,
+     "shuffle_moves": 7,
+     "shuffle_rate": 0.23,
+     "retries": 9,
+     "rejections": {
+      "budget_exhausted:budget": 5,
+      "scout_blocked": 1,
+      "repetition": 3
+     },
+     "thinking_tokens": 240341,
+     "thinking_tokens_source": "tokenizer",
+     "completion_tokens": 85367,
+     "seconds": 4912.8,
+     "reasoning_captured": 30
+    }
+   },
+   "failures": {
+    "illegal_move": 5,
+    "parse_failure": 0,
+    "budget_exhausted": 5
+   }
+  }
+ ],
+ "report": {
+  "by_model": {
+   "a": {
+    "wins": 2,
+    "losses": 3,
+    "draws": 1,
+    "games": 6
+   },
+   "b": {
+    "wins": 3,
+    "losses": 2,
+    "draws": 1,
+    "games": 6
+   }
+  },
+  "by_color": {
+   "R": 1,
+   "B": 4,
+   "draw": 1
+  },
+  "means": {
+   "a": {
+    "moves": 29.33,
+    "piece_types_used": 5.67,
+    "combats_initiated": 3.33,
+    "combat_won": 1.33,
+    "combat_lost": 1.17,
+    "combat_traded": 0.83,
+    "closest_to_enemy_flag": 3.5,
+    "shuffle_moves": 7.17,
+    "shuffle_rate": 0.25,
+    "retries": 2.17,
+    "thinking_tokens": 115635.0,
+    "completion_tokens": 23540.33,
+    "seconds": 2414.87,
+    "reasoning_captured": 29.33
+   },
+   "b": {
+    "moves": 29.5,
+    "piece_types_used": 5.5,
+    "combats_initiated": 2.5,
+    "combat_won": 1.0,
+    "combat_lost": 0.67,
+    "combat_traded": 0.83,
+    "closest_to_enemy_flag": 2.67,
+    "shuffle_moves": 4.67,
+    "shuffle_rate": 0.16,
+    "retries": 2.33,
+    "thinking_tokens": 121258.33,
+    "completion_tokens": 26253.67,
+    "seconds": 2531.45,
+    "reasoning_captured": 29.5
+   }
+  },
+  "rejections": {
+   "a": {
+    "not_yours": 1,
+    "not_adjacent": 1,
+    "own_piece": 2,
+    "budget_exhausted:budget": 8,
+    "scout_blocked": 1,
+    "repetition": 3
+   },
+   "b": {
+    "own_piece": 2,
+    "not_adjacent": 3,
+    "budget_exhausted:budget": 8,
+    "scout_blocked": 1
+   }
+  },
+  "n_games": 6,
+  "names": {
+   "a": "gpt-oss:20b",
+   "b": "gpt-oss:20b"
+  }
+ }
+}
