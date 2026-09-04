@@ -1,0 +1,461 @@
+{
+ "model_a": "claude-sonnet-5",
+ "model_b": "openai/gpt-5.6-terra",
+ "variant": "barrage",
+ "thinking": "standard",
+ "max_tokens": 16000,
+ "context_tokens": null,
+ "served_as": null,
+ "move_cap": 200,
+ "games": [
+  {
+   "tag": "p0a",
+   "file": "/Users/brettzeigler/Stratego/records/match-sonnet5-vs-terra-standard/p0a.jsonl",
+   "seed": 100,
+   "openings": {
+    "R": "corner-fortress",
+    "B": "far-corner"
+   },
+   "red_model": "claude-sonnet-5",
+   "blue_model": "openai/gpt-5.6-terra",
+   "played": "B",
+   "adjudicated": "B",
+   "adjudicated_reason": "flag_captured",
+   "material": {
+    "R": 14,
+    "B": 8
+   },
+   "plies": 86,
+   "per_side": {
+    "R": {
+     "moves": 43,
+     "piece_types_used": 6,
+     "combats_initiated": 3,
+     "combat_won": 1,
+     "combat_lost": 0,
+     "combat_traded": 2,
+     "closest_to_enemy_flag": 2,
+     "shuffle_moves": 2,
+     "shuffle_rate": 0.05,
+     "retries": 1,
+     "rejections": {
+      "parse_failure": 1
+     },
+     "thinking_tokens": 23935,
+     "thinking_tokens_source": "provider",
+     "completion_tokens": 48357,
+     "seconds": 591.8,
+     "reasoning_captured": 43
+    },
+    "B": {
+     "moves": 43,
+     "piece_types_used": 5,
+     "combats_initiated": 4,
+     "combat_won": 2,
+     "combat_lost": 1,
+     "combat_traded": 1,
+     "closest_to_enemy_flag": 0,
+     "shuffle_moves": 2,
+     "shuffle_rate": 0.05,
+     "retries": 0,
+     "rejections": {},
+     "thinking_tokens": 24916,
+     "thinking_tokens_source": "provider",
+     "completion_tokens": 29589,
+     "seconds": 512.7,
+     "reasoning_captured": 27
+    }
+   },
+   "failures": {
+    "illegal_move": 0,
+    "parse_failure": 1,
+    "budget_exhausted": 0
+   }
+  },
+  {
+   "tag": "p0b",
+   "file": "/Users/brettzeigler/Stratego/records/match-sonnet5-vs-terra-standard/p0b.jsonl",
+   "seed": 100,
+   "openings": {
+    "R": "corner-fortress",
+    "B": "far-corner"
+   },
+   "red_model": "openai/gpt-5.6-terra",
+   "blue_model": "claude-sonnet-5",
+   "played": "R",
+   "adjudicated": "R",
+   "adjudicated_reason": "flag_captured",
+   "material": {
+    "R": 23,
+    "B": 28
+   },
+   "plies": 69,
+   "per_side": {
+    "R": {
+     "moves": 35,
+     "piece_types_used": 5,
+     "combats_initiated": 3,
+     "combat_won": 1,
+     "combat_lost": 1,
+     "combat_traded": 1,
+     "closest_to_enemy_flag": 0,
+     "shuffle_moves": 3,
+     "shuffle_rate": 0.09,
+     "retries": 0,
+     "rejections": {},
+     "thinking_tokens": 18253,
+     "thinking_tokens_source": "provider",
+     "completion_tokens": 21830,
+     "seconds": 379.2,
+     "reasoning_captured": 25
+    },
+    "B": {
+     "moves": 34,
+     "piece_types_used": 6,
+     "combats_initiated": 2,
+     "combat_won": 1,
+     "combat_lost": 1,
+     "combat_traded": 0,
+     "closest_to_enemy_flag": 1,
+     "shuffle_moves": 5,
+     "shuffle_rate": 0.15,
+     "retries": 1,
+     "rejections": {
+      "not_adjacent": 1
+     },
+     "thinking_tokens": 33375,
+     "thinking_tokens_source": "provider",
+     "completion_tokens": 42173,
+     "seconds": 615.3,
+     "reasoning_captured": 34
+    }
+   },
+   "failures": {
+    "illegal_move": 1,
+    "parse_failure": 0,
+    "budget_exhausted": 0
+   }
+  },
+  {
+   "tag": "p1a",
+   "file": "/Users/brettzeigler/Stratego/records/match-sonnet5-vs-terra-standard/p1a.jsonl",
+   "seed": 101,
+   "openings": {
+    "R": "far-corner",
+    "B": "centre-guard"
+   },
+   "red_model": "claude-sonnet-5",
+   "blue_model": "openai/gpt-5.6-terra",
+   "played": "B",
+   "adjudicated": "B",
+   "adjudicated_reason": "flag_captured",
+   "material": {
+    "R": 10,
+    "B": 29
+   },
+   "plies": 108,
+   "per_side": {
+    "R": {
+     "moves": 54,
+     "piece_types_used": 6,
+     "combats_initiated": 1,
+     "combat_won": 1,
+     "combat_lost": 0,
+     "combat_traded": 0,
+     "closest_to_enemy_flag": 2,
+     "shuffle_moves": 8,
+     "shuffle_rate": 0.15,
+     "retries": 2,
+     "rejections": {
+      "bad_square": 1,
+      "parse_failure": 1
+     },
+     "thinking_tokens": 49908,
+     "thinking_tokens_source": "provider",
+     "completion_tokens": 63037,
+     "seconds": 1174.6,
+     "reasoning_captured": 54
+    },
+    "B": {
+     "moves": 54,
+     "piece_types_used": 6,
+     "combats_initiated": 7,
+     "combat_won": 6,
+     "combat_lost": 1,
+     "combat_traded": 0,
+     "closest_to_enemy_flag": 0,
+     "shuffle_moves": 4,
+     "shuffle_rate": 0.07,
+     "retries": 0,
+     "rejections": {},
+     "thinking_tokens": 48404,
+     "thinking_tokens_source": "provider",
+     "completion_tokens": 54266,
+     "seconds": 880.8,
+     "reasoning_captured": 40
+    }
+   },
+   "failures": {
+    "illegal_move": 1,
+    "parse_failure": 1,
+    "budget_exhausted": 0
+   }
+  },
+  {
+   "tag": "p1b",
+   "file": "/Users/brettzeigler/Stratego/records/match-sonnet5-vs-terra-standard/p1b.jsonl",
+   "seed": 101,
+   "openings": {
+    "R": "far-corner",
+    "B": "centre-guard"
+   },
+   "red_model": "openai/gpt-5.6-terra",
+   "blue_model": "claude-sonnet-5",
+   "played": "R",
+   "adjudicated": "R",
+   "adjudicated_reason": "no_legal_moves",
+   "material": {
+    "R": 28,
+    "B": 4
+   },
+   "plies": 67,
+   "per_side": {
+    "R": {
+     "moves": 34,
+     "piece_types_used": 4,
+     "combats_initiated": 5,
+     "combat_won": 4,
+     "combat_lost": 1,
+     "combat_traded": 0,
+     "closest_to_enemy_flag": 1,
+     "shuffle_moves": 9,
+     "shuffle_rate": 0.26,
+     "retries": 0,
+     "rejections": {},
+     "thinking_tokens": 24064,
+     "thinking_tokens_source": "provider",
+     "completion_tokens": 27699,
+     "seconds": 450.6,
+     "reasoning_captured": 26
+    },
+    "B": {
+     "moves": 33,
+     "piece_types_used": 6,
+     "combats_initiated": 2,
+     "combat_won": 0,
+     "combat_lost": 1,
+     "combat_traded": 1,
+     "closest_to_enemy_flag": 3,
+     "shuffle_moves": 4,
+     "shuffle_rate": 0.12,
+     "retries": 0,
+     "rejections": {},
+     "thinking_tokens": 60536,
+     "thinking_tokens_source": "provider",
+     "completion_tokens": 70435,
+     "seconds": 961.6,
+     "reasoning_captured": 33
+    }
+   },
+   "failures": {
+    "illegal_move": 0,
+    "parse_failure": 0,
+    "budget_exhausted": 0
+   }
+  },
+  {
+   "tag": "p2a",
+   "file": "/Users/brettzeigler/Stratego/records/match-sonnet5-vs-terra-standard/p2a.jsonl",
+   "seed": 102,
+   "openings": {
+    "R": "centre-guard",
+    "B": "corner-fortress"
+   },
+   "red_model": "claude-sonnet-5",
+   "blue_model": "openai/gpt-5.6-terra",
+   "played": "B",
+   "adjudicated": "B",
+   "adjudicated_reason": "no_legal_moves",
+   "material": {
+    "R": 4,
+    "B": 19
+   },
+   "plies": 88,
+   "per_side": {
+    "R": {
+     "moves": 44,
+     "piece_types_used": 6,
+     "combats_initiated": 0,
+     "combat_won": 0,
+     "combat_lost": 0,
+     "combat_traded": 0,
+     "closest_to_enemy_flag": 4,
+     "shuffle_moves": 11,
+     "shuffle_rate": 0.25,
+     "retries": 1,
+     "rejections": {
+      "parse_failure": 1
+     },
+     "thinking_tokens": 31758,
+     "thinking_tokens_source": "provider",
+     "completion_tokens": 51321,
+     "seconds": 1101.3,
+     "reasoning_captured": 43
+    },
+    "B": {
+     "moves": 44,
+     "piece_types_used": 4,
+     "combats_initiated": 7,
+     "combat_won": 4,
+     "combat_lost": 1,
+     "combat_traded": 2,
+     "closest_to_enemy_flag": 2,
+     "shuffle_moves": 3,
+     "shuffle_rate": 0.07,
+     "retries": 0,
+     "rejections": {},
+     "thinking_tokens": 35285,
+     "thinking_tokens_source": "provider",
+     "completion_tokens": 40002,
+     "seconds": 622.9,
+     "reasoning_captured": 32
+    }
+   },
+   "failures": {
+    "illegal_move": 0,
+    "parse_failure": 1,
+    "budget_exhausted": 0
+   }
+  },
+  {
+   "tag": "p2b",
+   "file": "/Users/brettzeigler/Stratego/records/match-sonnet5-vs-terra-standard/p2b.jsonl",
+   "seed": 102,
+   "openings": {
+    "R": "centre-guard",
+    "B": "corner-fortress"
+   },
+   "red_model": "openai/gpt-5.6-terra",
+   "blue_model": "claude-sonnet-5",
+   "played": "B",
+   "adjudicated": "B",
+   "adjudicated_reason": "flag_captured",
+   "material": {
+    "R": 14,
+    "B": 14
+   },
+   "plies": 64,
+   "per_side": {
+    "R": {
+     "moves": 32,
+     "piece_types_used": 5,
+     "combats_initiated": 1,
+     "combat_won": 1,
+     "combat_lost": 0,
+     "combat_traded": 0,
+     "closest_to_enemy_flag": 2,
+     "shuffle_moves": 1,
+     "shuffle_rate": 0.03,
+     "retries": 0,
+     "rejections": {},
+     "thinking_tokens": 16947,
+     "thinking_tokens_source": "provider",
+     "completion_tokens": 20259,
+     "seconds": 329.9,
+     "reasoning_captured": 18
+    },
+    "B": {
+     "moves": 32,
+     "piece_types_used": 6,
+     "combats_initiated": 6,
+     "combat_won": 3,
+     "combat_lost": 1,
+     "combat_traded": 2,
+     "closest_to_enemy_flag": 0,
+     "shuffle_moves": 2,
+     "shuffle_rate": 0.06,
+     "retries": 0,
+     "rejections": {},
+     "thinking_tokens": 25313,
+     "thinking_tokens_source": "provider",
+     "completion_tokens": 32680,
+     "seconds": 485.2,
+     "reasoning_captured": 31
+    }
+   },
+   "failures": {
+    "illegal_move": 0,
+    "parse_failure": 0,
+    "budget_exhausted": 0
+   }
+  }
+ ],
+ "report": {
+  "by_model": {
+   "a": {
+    "wins": 1,
+    "losses": 5,
+    "draws": 0,
+    "games": 6
+   },
+   "b": {
+    "wins": 5,
+    "losses": 1,
+    "draws": 0,
+    "games": 6
+   }
+  },
+  "by_color": {
+   "R": 2,
+   "B": 4,
+   "draw": 0
+  },
+  "means": {
+   "a": {
+    "moves": 40.0,
+    "piece_types_used": 6.0,
+    "combats_initiated": 2.33,
+    "combat_won": 1.0,
+    "combat_lost": 0.5,
+    "combat_traded": 0.83,
+    "closest_to_enemy_flag": 2.0,
+    "shuffle_moves": 5.33,
+    "shuffle_rate": 0.13,
+    "retries": 0.83,
+    "thinking_tokens": 37470.83,
+    "completion_tokens": 51333.83,
+    "seconds": 821.63,
+    "reasoning_captured": 39.67
+   },
+   "b": {
+    "moves": 40.33,
+    "piece_types_used": 4.83,
+    "combats_initiated": 4.5,
+    "combat_won": 3.0,
+    "combat_lost": 0.83,
+    "combat_traded": 0.67,
+    "closest_to_enemy_flag": 0.83,
+    "shuffle_moves": 3.67,
+    "shuffle_rate": 0.1,
+    "retries": 0.0,
+    "thinking_tokens": 27978.17,
+    "completion_tokens": 32274.17,
+    "seconds": 529.35,
+    "reasoning_captured": 28.0
+   }
+  },
+  "rejections": {
+   "a": {
+    "parse_failure": 3,
+    "not_adjacent": 1,
+    "bad_square": 1
+   },
+   "b": {}
+  },
+  "n_games": 6,
+  "names": {
+   "a": "claude-sonnet-5",
+   "b": "openai/gpt-5.6-terra"
+  }
+ }
+}
