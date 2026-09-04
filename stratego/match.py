@@ -21,7 +21,7 @@ from .metrics import analyze
 
 def play_match(model_a: ModelProfile, model_b: ModelProfile, pairs: int,
                variant: str = "barrage", thinking: str = "brief",
-               move_cap: int = 60, out_dir: str | Path = "records/match",
+               move_cap: int = 200, out_dir: str | Path = "records/match",
                base_seed: int = 100, move_assist: str = "full",
                threat_assist: str = "full", deployment: str = "library",
                verbose: bool = True) -> dict:

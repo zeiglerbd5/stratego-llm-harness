@@ -158,10 +158,6 @@ def render(st: GameState, me: str, scratchpad: str = "",
         f"MATERIAL (adjudication points): you {mat[me]}, enemy {mat[them]}",
     ]
 
-    threats = _threats(st, me, threat_assist)
-    if threats:
-        parts += [""] + threats
-
     if st.log:
         tail = st.log[-MOVE_LOG_TAIL:]
         entries = []
@@ -181,5 +177,12 @@ def render(st: GameState, me: str, scratchpad: str = "",
         parts += ["", f"LEGAL MOVES ({n}) - this list is complete. A square not shown "
                       "is unreachable this turn (lake, blocked, or Sec.5 Repetition). "
                       "Choose one of these:", body]
+
+    # After the Legal Move List, not before it. Listed ahead of everything a
+    # Model could do, the threats framed every turn as defence, and a Model
+    # that follows instructions spent whole Games retreating.
+    threats = _threats(st, me, threat_assist)
+    if threats:
+        parts += [""] + threats
 
     return "\n".join(parts)

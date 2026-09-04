@@ -21,7 +21,9 @@ def main() -> None:
     ap.add_argument("--pairs", type=int, default=3)
     ap.add_argument("--variant", default="barrage", choices=["barrage", "classic"])
     ap.add_argument("--thinking", default="brief", choices=["off", "brief", "standard", "deep"])
-    ap.add_argument("--move-cap", type=int, default=60)
+    ap.add_argument("--move-cap", type=int, default=200,
+                    help="plies before material adjudication. 60 made a "
+                         "material draw the safe policy; 200 leaves time to hunt")
     ap.add_argument("--max-tokens", type=int, default=4000, help="output ceiling per attempt, thinking plus answer, doubled once on exhaustion. Must not bind at the chosen --thinking or the Game is contaminated (ADR-0001): 4000 fits brief on gpt-oss:20b, standard needs ~16000")
     ap.add_argument("--move-assist", default="full", choices=["none", "hints", "full"])
     ap.add_argument("--threat-assist", default="full", choices=["none", "hints", "full"])

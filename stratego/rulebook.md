@@ -63,6 +63,3 @@ material is within 2 points. Material values:
 
 `Marshal 10, General 9, Colonel 8, Major 7, Captain 6, Spy 6, Lieutenant 5,
 Miner 5, Sergeant 4, Bomb 4, Scout 3, Flag 0`
-
-Material is therefore always worth protecting, and trading a strong piece for a
-weak one is a real loss even if you never lose your Flag.
