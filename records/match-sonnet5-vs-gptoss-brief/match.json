@@ -1,0 +1,463 @@
+{
+ "model_a": "claude-sonnet-5",
+ "model_b": "gpt-oss:20b",
+ "variant": "barrage",
+ "thinking": "brief",
+ "max_tokens": 16000,
+ "context_tokens": null,
+ "served_as": null,
+ "move_cap": 60,
+ "games": [
+  {
+   "tag": "p0a",
+   "file": "/Users/brettzeigler/Stratego/records/match-sonnet5-vs-gptoss-brief/p0a.jsonl",
+   "seed": 100,
+   "openings": {
+    "R": "corner-fortress",
+    "B": "far-corner"
+   },
+   "red_model": "claude-sonnet-5",
+   "blue_model": "gpt-oss:20b",
+   "played": "draw",
+   "adjudicated": "draw",
+   "adjudicated_reason": "material level (+0)",
+   "material": {
+    "R": 38,
+    "B": 38
+   },
+   "plies": 60,
+   "per_side": {
+    "R": {
+     "moves": 30,
+     "piece_types_used": 5,
+     "combats_initiated": 1,
+     "combat_won": 0,
+     "combat_lost": 0,
+     "combat_traded": 1,
+     "closest_to_enemy_flag": 2,
+     "shuffle_moves": 6,
+     "shuffle_rate": 0.2,
+     "retries": 0,
+     "rejections": {},
+     "thinking_tokens": 3295,
+     "thinking_tokens_source": "provider",
+     "completion_tokens": 7511,
+     "seconds": 147.9,
+     "reasoning_captured": 23
+    },
+    "B": {
+     "moves": 30,
+     "piece_types_used": 6,
+     "combats_initiated": 0,
+     "combat_won": 0,
+     "combat_lost": 0,
+     "combat_traded": 0,
+     "closest_to_enemy_flag": 7,
+     "shuffle_moves": 9,
+     "shuffle_rate": 0.3,
+     "retries": 4,
+     "rejections": {
+      "repetition": 3,
+      "own_piece": 1
+     },
+     "thinking_tokens": 10798,
+     "thinking_tokens_source": "tokenizer",
+     "completion_tokens": 4416,
+     "seconds": 385.3,
+     "reasoning_captured": 30
+    }
+   },
+   "failures": {
+    "illegal_move": 4,
+    "parse_failure": 0,
+    "budget_exhausted": 0
+   }
+  },
+  {
+   "tag": "p0b",
+   "file": "/Users/brettzeigler/Stratego/records/match-sonnet5-vs-gptoss-brief/p0b.jsonl",
+   "seed": 100,
+   "openings": {
+    "R": "corner-fortress",
+    "B": "far-corner"
+   },
+   "red_model": "gpt-oss:20b",
+   "blue_model": "claude-sonnet-5",
+   "played": "draw",
+   "adjudicated": "R",
+   "adjudicated_reason": "material +15",
+   "material": {
+    "R": 28,
+    "B": 13
+   },
+   "plies": 60,
+   "per_side": {
+    "R": {
+     "moves": 30,
+     "piece_types_used": 4,
+     "combats_initiated": 5,
+     "combat_won": 4,
+     "combat_lost": 1,
+     "combat_traded": 0,
+     "closest_to_enemy_flag": 1,
+     "shuffle_moves": 4,
+     "shuffle_rate": 0.13,
+     "retries": 0,
+     "rejections": {},
+     "thinking_tokens": 9243,
+     "thinking_tokens_source": "tokenizer",
+     "completion_tokens": 3839,
+     "seconds": 332.4,
+     "reasoning_captured": 30
+    },
+    "B": {
+     "moves": 30,
+     "piece_types_used": 6,
+     "combats_initiated": 1,
+     "combat_won": 0,
+     "combat_lost": 0,
+     "combat_traded": 1,
+     "closest_to_enemy_flag": 8,
+     "shuffle_moves": 5,
+     "shuffle_rate": 0.17,
+     "retries": 1,
+     "rejections": {
+      "bad_square": 1
+     },
+     "thinking_tokens": 12435,
+     "thinking_tokens_source": "provider",
+     "completion_tokens": 17874,
+     "seconds": 646.1,
+     "reasoning_captured": 24
+    }
+   },
+   "failures": {
+    "illegal_move": 1,
+    "parse_failure": 0,
+    "budget_exhausted": 0
+   }
+  },
+  {
+   "tag": "p1a",
+   "file": "/Users/brettzeigler/Stratego/records/match-sonnet5-vs-gptoss-brief/p1a.jsonl",
+   "seed": 101,
+   "openings": {
+    "R": "far-corner",
+    "B": "centre-guard"
+   },
+   "red_model": "claude-sonnet-5",
+   "blue_model": "gpt-oss:20b",
+   "played": "draw",
+   "adjudicated": "R",
+   "adjudicated_reason": "material +4",
+   "material": {
+    "R": 24,
+    "B": 20
+   },
+   "plies": 60,
+   "per_side": {
+    "R": {
+     "moves": 30,
+     "piece_types_used": 6,
+     "combats_initiated": 1,
+     "combat_won": 1,
+     "combat_lost": 0,
+     "combat_traded": 0,
+     "closest_to_enemy_flag": 2,
+     "shuffle_moves": 5,
+     "shuffle_rate": 0.17,
+     "retries": 0,
+     "rejections": {},
+     "thinking_tokens": 3136,
+     "thinking_tokens_source": "provider",
+     "completion_tokens": 7611,
+     "seconds": 142.2,
+     "reasoning_captured": 20
+    },
+    "B": {
+     "moves": 30,
+     "piece_types_used": 6,
+     "combats_initiated": 4,
+     "combat_won": 1,
+     "combat_lost": 1,
+     "combat_traded": 2,
+     "closest_to_enemy_flag": 7,
+     "shuffle_moves": 7,
+     "shuffle_rate": 0.23,
+     "retries": 0,
+     "rejections": {},
+     "thinking_tokens": 11393,
+     "thinking_tokens_source": "tokenizer",
+     "completion_tokens": 5462,
+     "seconds": 396.5,
+     "reasoning_captured": 30
+    }
+   },
+   "failures": {
+    "illegal_move": 0,
+    "parse_failure": 0,
+    "budget_exhausted": 0
+   }
+  },
+  {
+   "tag": "p1b",
+   "file": "/Users/brettzeigler/Stratego/records/match-sonnet5-vs-gptoss-brief/p1b.jsonl",
+   "seed": 101,
+   "openings": {
+    "R": "far-corner",
+    "B": "centre-guard"
+   },
+   "red_model": "gpt-oss:20b",
+   "blue_model": "claude-sonnet-5",
+   "played": "draw",
+   "adjudicated": "draw",
+   "adjudicated_reason": "material level (+0)",
+   "material": {
+    "R": 28,
+    "B": 28
+   },
+   "plies": 60,
+   "per_side": {
+    "R": {
+     "moves": 30,
+     "piece_types_used": 6,
+     "combats_initiated": 1,
+     "combat_won": 0,
+     "combat_lost": 0,
+     "combat_traded": 1,
+     "closest_to_enemy_flag": 4,
+     "shuffle_moves": 6,
+     "shuffle_rate": 0.2,
+     "retries": 0,
+     "rejections": {},
+     "thinking_tokens": 10213,
+     "thinking_tokens_source": "tokenizer",
+     "completion_tokens": 3709,
+     "seconds": 342.1,
+     "reasoning_captured": 30
+    },
+    "B": {
+     "moves": 30,
+     "piece_types_used": 6,
+     "combats_initiated": 1,
+     "combat_won": 0,
+     "combat_lost": 0,
+     "combat_traded": 1,
+     "closest_to_enemy_flag": 3,
+     "shuffle_moves": 9,
+     "shuffle_rate": 0.3,
+     "retries": 0,
+     "rejections": {},
+     "thinking_tokens": 5091,
+     "thinking_tokens_source": "provider",
+     "completion_tokens": 9617,
+     "seconds": 169.2,
+     "reasoning_captured": 21
+    }
+   },
+   "failures": {
+    "illegal_move": 0,
+    "parse_failure": 0,
+    "budget_exhausted": 0
+   }
+  },
+  {
+   "tag": "p2a",
+   "file": "/Users/brettzeigler/Stratego/records/match-sonnet5-vs-gptoss-brief/p2a.jsonl",
+   "seed": 102,
+   "openings": {
+    "R": "centre-guard",
+    "B": "corner-fortress"
+   },
+   "red_model": "claude-sonnet-5",
+   "blue_model": "gpt-oss:20b",
+   "played": "draw",
+   "adjudicated": "B",
+   "adjudicated_reason": "material -7",
+   "material": {
+    "R": 34,
+    "B": 41
+   },
+   "plies": 60,
+   "per_side": {
+    "R": {
+     "moves": 30,
+     "piece_types_used": 5,
+     "combats_initiated": 1,
+     "combat_won": 0,
+     "combat_lost": 1,
+     "combat_traded": 0,
+     "closest_to_enemy_flag": 2,
+     "shuffle_moves": 9,
+     "shuffle_rate": 0.3,
+     "retries": 0,
+     "rejections": {},
+     "thinking_tokens": 2400,
+     "thinking_tokens_source": "provider",
+     "completion_tokens": 6964,
+     "seconds": 127.7,
+     "reasoning_captured": 18
+    },
+    "B": {
+     "moves": 30,
+     "piece_types_used": 4,
+     "combats_initiated": 1,
+     "combat_won": 1,
+     "combat_lost": 0,
+     "combat_traded": 0,
+     "closest_to_enemy_flag": 3,
+     "shuffle_moves": 12,
+     "shuffle_rate": 0.4,
+     "retries": 2,
+     "rejections": {
+      "repetition": 2
+     },
+     "thinking_tokens": 14853,
+     "thinking_tokens_source": "tokenizer",
+     "completion_tokens": 3954,
+     "seconds": 432.0,
+     "reasoning_captured": 30
+    }
+   },
+   "failures": {
+    "illegal_move": 2,
+    "parse_failure": 0,
+    "budget_exhausted": 0
+   }
+  },
+  {
+   "tag": "p2b",
+   "file": "/Users/brettzeigler/Stratego/records/match-sonnet5-vs-gptoss-brief/p2b.jsonl",
+   "seed": 102,
+   "openings": {
+    "R": "centre-guard",
+    "B": "corner-fortress"
+   },
+   "red_model": "gpt-oss:20b",
+   "blue_model": "claude-sonnet-5",
+   "played": "draw",
+   "adjudicated": "B",
+   "adjudicated_reason": "material -9",
+   "material": {
+    "R": 19,
+    "B": 28
+   },
+   "plies": 60,
+   "per_side": {
+    "R": {
+     "moves": 30,
+     "piece_types_used": 6,
+     "combats_initiated": 3,
+     "combat_won": 2,
+     "combat_lost": 1,
+     "combat_traded": 0,
+     "closest_to_enemy_flag": 3,
+     "shuffle_moves": 5,
+     "shuffle_rate": 0.17,
+     "retries": 1,
+     "rejections": {
+      "not_adjacent": 1
+     },
+     "thinking_tokens": 15457,
+     "thinking_tokens_source": "tokenizer",
+     "completion_tokens": 3817,
+     "seconds": 442.6,
+     "reasoning_captured": 30
+    },
+    "B": {
+     "moves": 30,
+     "piece_types_used": 5,
+     "combats_initiated": 2,
+     "combat_won": 2,
+     "combat_lost": 0,
+     "combat_traded": 0,
+     "closest_to_enemy_flag": 3,
+     "shuffle_moves": 2,
+     "shuffle_rate": 0.07,
+     "retries": 0,
+     "rejections": {},
+     "thinking_tokens": 6262,
+     "thinking_tokens_source": "provider",
+     "completion_tokens": 10925,
+     "seconds": 187.8,
+     "reasoning_captured": 23
+    }
+   },
+   "failures": {
+    "illegal_move": 1,
+    "parse_failure": 0,
+    "budget_exhausted": 0
+   }
+  }
+ ],
+ "report": {
+  "by_model": {
+   "a": {
+    "wins": 2,
+    "losses": 2,
+    "draws": 2,
+    "games": 6
+   },
+   "b": {
+    "wins": 2,
+    "losses": 2,
+    "draws": 2,
+    "games": 6
+   }
+  },
+  "by_color": {
+   "R": 2,
+   "B": 2,
+   "draw": 2
+  },
+  "means": {
+   "a": {
+    "moves": 30.0,
+    "piece_types_used": 5.5,
+    "combats_initiated": 1.17,
+    "combat_won": 0.5,
+    "combat_lost": 0.17,
+    "combat_traded": 0.5,
+    "closest_to_enemy_flag": 3.33,
+    "shuffle_moves": 6.0,
+    "shuffle_rate": 0.2,
+    "retries": 0.17,
+    "thinking_tokens": 5436.5,
+    "completion_tokens": 10083.67,
+    "seconds": 236.82,
+    "reasoning_captured": 21.5
+   },
+   "b": {
+    "moves": 30.0,
+    "piece_types_used": 5.33,
+    "combats_initiated": 2.33,
+    "combat_won": 1.33,
+    "combat_lost": 0.5,
+    "combat_traded": 0.5,
+    "closest_to_enemy_flag": 4.17,
+    "shuffle_moves": 7.17,
+    "shuffle_rate": 0.24,
+    "retries": 1.17,
+    "thinking_tokens": 11992.83,
+    "completion_tokens": 4199.5,
+    "seconds": 388.48,
+    "reasoning_captured": 30.0
+   }
+  },
+  "rejections": {
+   "a": {
+    "bad_square": 1
+   },
+   "b": {
+    "repetition": 5,
+    "own_piece": 1,
+    "not_adjacent": 1
+   }
+  },
+  "n_games": 6,
+  "names": {
+   "a": "claude-sonnet-5",
+   "b": "gpt-oss:20b"
+  }
+ }
+}
