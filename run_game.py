@@ -6,7 +6,9 @@
 from __future__ import annotations
 
 import argparse
+import json
 import os
+from pathlib import Path
 
 from stratego.adapter import ModelProfile, unload
 from stratego.agent import Agent
@@ -56,10 +58,12 @@ def main() -> None:
     ap.add_argument("--seed", type=int, default=0)
     ap.add_argument("--out", default="records/game.jsonl")
     ap.add_argument("--deployment", default="library",
-                    choices=["model", "library", "random"],
+                    choices=["model", "library", "random", "file"],
                     help="who writes the opening setup. Default 'library' gives "
                          "both sides a sound opening so the Game measures play "
-                         "rather than setup; pass 'model' to benchmark setup skill")
+                         "rather than setup; 'model' benchmarks setup skill; "
+                         "'file' plays Model setups saved by run_deploy.py")
+    ap.add_argument("--deployment-file", help="JSON from run_deploy.py (with --deployment file)")
     ap.add_argument("--red-opening", help="library opening for RED "
                     "(default: random, never the same as BLUE's)")
     ap.add_argument("--blue-opening", help="library opening for BLUE "
@@ -78,9 +82,16 @@ def main() -> None:
           f"move_assist={args.move_assist} "
           f"threat_assist={args.threat_assist} deployment={args.deployment}"
           f"{' +guide' if args.strategy_guide else ''}")
+    fixed = None
+    if args.deployment == "file":
+        if not args.deployment_file:
+            ap.error("--deployment file needs --deployment-file")
+        fixed = json.loads(Path(args.deployment_file).read_text(encoding="utf-8"))
+        fixed["file"] = args.deployment_file
     summary = play_game(red, blue, args.variant, args.move_cap, args.out,
                         args.seed, deployment=args.deployment,
-                        openings={"R": args.red_opening, "B": args.blue_opening})
+                        openings={"R": args.red_opening, "B": args.blue_opening},
+                        fixed=fixed)
     print("\nRESULT:", summary)
     print("Record:", args.out)
     for p in (rp, bp):

@@ -19,8 +19,14 @@ def play_game(red: Agent, blue: Agent, variant: str = "barrage",
               move_cap: int = 400, out: str | Path = "records/game.jsonl",
               seed: int = 0, verbose: bool = True,
               deployment: str = "model",
-              openings: dict[str, str | None] | None = None) -> dict:
-    """`deployment` is model | library | random.
+              openings: dict[str, str | None] | None = None,
+              fixed: dict | None = None) -> dict:
+    """`deployment` is model | library | random | file.
+
+    `file` plays from `fixed`, the JSON written by run_deploy.py: each colour's
+    Model-authored Deployment, already validated and reviewed by a human
+    before any Move is paid for. Its rationale and attempts are recorded as
+    if the Model had just written it.
 
     `openings` names the library entry per colour, e.g.
     {"R": "corner-fortress", "B": "far-corner"}. The two are never the same:
@@ -34,6 +40,7 @@ def play_game(red: Agent, blue: Agent, variant: str = "barrage",
     rec = GameRecord(out, {
         "variant": variant, "move_cap": move_cap, "seed": seed,
         "deployment_source": deployment, "openings": chosen,
+        "deployment_file": (fixed or {}).get("file"),
         "prompt_version": prompt_version(red.strategy_guide or blue.strategy_guide),
         "red": {"agent": red.name, "model": red.profile.name,
                 "served_as": red.profile.served_name,
@@ -59,6 +66,9 @@ def play_game(red: Agent, blue: Agent, variant: str = "barrage",
             why, attempts = f"library Deployment {entry!r}", []
         elif deployment == "random":
             dep, why, attempts = random_deployment(ag.color, variant, rng), "random", []
+        elif deployment == "file":
+            side = fixed[ag.color]
+            dep, why, attempts = side["deployment"], side.get("rationale", ""), side.get("attempts", [])
         else:
             dep, why, attempts = ag.deploy(variant)
         if not dep:
