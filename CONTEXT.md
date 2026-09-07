@@ -144,6 +144,7 @@ normal way Games are played.
 _Avoid_: headless mode, silent mode
 
 **Replay Export**:
-A Game Record converted into an artifact a human can watch — currently a VASSAL
-file, ultimately a video.
+A Game Record rendered as a self-contained HTML page (`render_replay.py`) that
+steps through every Move with the Rationale beside the board, and can show the
+board as either side actually saw it.
 _Avoid_: export, render, playback

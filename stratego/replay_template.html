@@ -1,0 +1,265 @@
+<title>__TITLE__</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@500;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --bg:#ECEFE9; --panel:#F6F7F3; --ink:#1C2320; --muted:#5F6B64; --line:#C9CFC6;
+  --square:#DCD8CA; --square-line:#CBC6B6; --lake:#9DBBCB; --lake-line:#86A9BD;
+  --red:#B5322D; --red-soft:#E7C9C7; --blue:#2B4B86; --blue-soft:#C9D3E6; --army-ink:#FFFFFF;
+  --unknown:#8A9089; --accent:#C98A1B; --accent-soft:#F1DDB0; --shadow:0 1px 0 rgba(28,35,32,.12);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#161B18; --panel:#1F2622; --ink:#E6EAE4; --muted:#98A39B; --line:#343D37;
+    --square:#2A322D; --square-line:#3A443D; --lake:#365A6D; --lake-line:#47707F;
+    --red:#D4534D; --red-soft:#4A2826; --blue:#6B92D8; --blue-soft:#25324D; --army-ink:#FFFFFF;
+    --unknown:#5A635C; --accent:#E0A030; --accent-soft:#4A3A18; --shadow:0 1px 0 rgba(0,0,0,.4);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#161B18; --panel:#1F2622; --ink:#E6EAE4; --muted:#98A39B; --line:#343D37;
+  --square:#2A322D; --square-line:#3A443D; --lake:#365A6D; --lake-line:#47707F;
+  --red:#D4534D; --red-soft:#4A2826; --blue:#6B92D8; --blue-soft:#25324D; --army-ink:#FFFFFF;
+  --unknown:#5A635C; --accent:#E0A030; --accent-soft:#4A3A18; --shadow:0 1px 0 rgba(0,0,0,.4);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:'IBM Plex Sans',system-ui,-apple-system,sans-serif;font-size:15px;line-height:1.5}
+.wrap{max-width:1180px;margin:0 auto;padding:28px 24px 48px}
+.eyebrow{font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+h1{font-family:'Big Shoulders Display','Arial Narrow',sans-serif;font-weight:800;font-size:clamp(40px,6vw,64px);line-height:.95;margin:6px 0 10px;letter-spacing:.005em;text-wrap:balance}
+.sub{color:var(--muted);max-width:68ch;margin:0 0 26px}
+.sub b{color:var(--ink);font-weight:600}
+.side{font-weight:600}.side.R{color:var(--red)}.side.B{color:var(--blue)}
+.stage{display:grid;grid-template-columns:minmax(300px,600px) minmax(300px,1fr);gap:32px;align-items:start}
+@media (max-width:880px){.stage{grid-template-columns:1fr}}
+/* board */
+.board{display:grid;grid-template-columns:26px repeat(10,1fr) 26px;grid-template-rows:26px repeat(10,1fr) 26px;aspect-ratio:1/1;width:100%;background:var(--square);border:1px solid var(--square-line);box-shadow:var(--shadow);user-select:none}
+.coord{display:flex;align-items:center;justify-content:center;font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:11px;color:var(--muted)}
+.sq{position:relative;border:1px solid var(--square-line);display:flex;align-items:center;justify-content:center;padding:6%}
+.sq.lake{background:var(--lake);border-color:var(--lake-line)}
+.sq.from::after{content:"";position:absolute;inset:8%;border:2px dashed var(--accent);border-radius:3px;pointer-events:none}
+.sq.to{box-shadow:inset 0 0 0 3px var(--accent)}
+.sq.combat .piece{animation:flash .6s ease-out 1}
+@keyframes flash{0%{transform:scale(1.18);filter:brightness(1.4)}100%{transform:none;filter:none}}
+@media (prefers-reduced-motion:reduce){.sq.combat .piece{animation:none}}
+.piece{width:100%;height:100%;border-radius:4px;display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--army-ink);line-height:1;position:relative;box-shadow:0 1px 1px rgba(0,0,0,.25)}
+.piece.R{background:var(--red)}.piece.B{background:var(--blue)}
+.piece.unknown{background:var(--unknown);color:var(--panel)}
+.piece .g{font-family:'Big Shoulders Display','Arial Narrow',sans-serif;font-weight:800;font-size:clamp(14px,2.6vw,30px)}
+.piece .n{font-size:clamp(6px,.9vw,9px);letter-spacing:.06em;text-transform:uppercase;opacity:.85;margin-top:2px}
+.piece.seen::before{content:"";position:absolute;top:8%;right:8%;width:14%;height:14%;border-radius:50%;background:var(--army-ink);opacity:.9}
+.legend{display:flex;gap:18px;flex-wrap:wrap;margin-top:10px;font-size:12px;color:var(--muted)}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:2px}
+.legend i.dot{border-radius:50%;width:8px;height:8px;background:var(--ink)}
+/* right column */
+.panel{display:flex;flex-direction:column;gap:18px}
+.transport{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+button{font:inherit;font-weight:600;color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:8px 12px;cursor:pointer;min-width:44px}
+button:hover{border-color:var(--accent)}
+button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+button.primary{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+select{font:inherit;color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:8px 10px}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:6px;overflow:hidden;margin-left:auto}
+.seg button{border:0;border-radius:0;min-width:0;padding:7px 10px;font-weight:500}
+.seg button+button{border-left:1px solid var(--line)}
+.seg button[aria-pressed="true"]{background:var(--accent-soft);color:var(--ink)}
+input[type=range]{width:100%;accent-color:var(--accent)}
+.ply{display:flex;align-items:baseline;gap:12px}
+.ply .num{font-family:'Big Shoulders Display','Arial Narrow',sans-serif;font-weight:800;font-size:56px;line-height:1;font-variant-numeric:tabular-nums}
+.ply .of{color:var(--muted);font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:13px}
+.caption{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:18px 20px;display:flex;flex-direction:column;gap:10px}
+.mover{font-size:17px}
+.mover code,.meta code{font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:.92em;background:transparent}
+.combat{font-weight:600}
+.combat.win{color:var(--ink)}.combat.loss{color:var(--muted)}
+blockquote{margin:4px 0 0;padding:0 0 0 14px;border-left:3px solid var(--line);color:var(--ink);max-width:62ch;font-size:15.5px;max-height:11em;overflow-y:auto}
+.meta{color:var(--muted);font-size:13px;font-family:'IBM Plex Mono',ui-monospace,monospace}
+.status{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.army{border-top:3px solid;padding-top:10px}
+.army.R{border-color:var(--red)}.army.B{border-color:var(--blue)}
+.army .who{display:flex;justify-content:space-between;align-items:baseline}
+.army .mat{font-family:'Big Shoulders Display','Arial Narrow',sans-serif;font-weight:700;font-size:34px;font-variant-numeric:tabular-nums;line-height:1}
+.army .lbl{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.lost{display:flex;gap:4px;flex-wrap:wrap;margin-top:8px;min-height:26px}
+.lost .chip{width:26px;height:26px;border-radius:3px;display:flex;align-items:center;justify-content:center;font-family:'Big Shoulders Display','Arial Narrow',sans-serif;font-weight:800;font-size:14px;color:var(--army-ink)}
+.lost .chip.R{background:var(--red)}.lost .chip.B{background:var(--blue)}
+.foot{margin-top:34px;padding-top:14px;border-top:1px solid var(--line);color:var(--muted);font-size:13px;max-width:78ch}
+.foot code{font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:.92em}
+</style>
+
+<div class="wrap">
+  <div class="eyebrow">__EYEBROW__</div>
+  <h1>__TITLE__</h1>
+  <p class="sub">__SUBLINE__</p>
+
+  <div class="stage">
+    <div>
+      <div class="board" id="board" aria-label="Stratego board"></div>
+      <div class="legend">
+        <span><i style="background:var(--red)"></i> Red</span>
+        <span><i style="background:var(--blue)"></i> Blue</span>
+        <span><i style="background:var(--lake)"></i> lake</span>
+        <span><i class="dot"></i> rank revealed to the enemy</span>
+        <span><i style="border:2px dashed var(--accent);background:transparent"></i> from · <i style="box-shadow:inset 0 0 0 3px var(--accent);background:transparent"></i> to</span>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="transport">
+        <button id="first" title="Start (Home)">⏮</button>
+        <button id="prev" title="Back one ply (←)">◀</button>
+        <button id="play" class="primary" title="Play / pause (space)">Play</button>
+        <button id="next" title="Forward one ply (→)">▶</button>
+        <button id="last" title="End (End)">⏭</button>
+        <select id="speed" aria-label="Playback speed">
+          <option value="2500">Slow</option><option value="1400" selected>Normal</option><option value="600">Fast</option>
+        </select>
+        <div class="seg" role="group" aria-label="Whose view">
+          <button data-view="all" aria-pressed="true">Everything</button>
+          <button data-view="R" aria-pressed="false">Red sees</button>
+          <button data-view="B" aria-pressed="false">Blue sees</button>
+        </div>
+      </div>
+      <input type="range" id="scrub" min="0" value="0" aria-label="Ply">
+
+      <div class="ply"><span class="num" id="plynum">0</span><span class="of" id="plyof"></span></div>
+
+      <div class="caption">
+        <div class="mover" id="mover"></div>
+        <div class="combat" id="combat" hidden></div>
+        <blockquote id="why"></blockquote>
+        <div class="meta" id="meta"></div>
+      </div>
+
+      <div class="status">
+        <div class="army R"><div class="who"><span><span class="lbl">Red · </span><span class="side R" id="redname"></span></span><span class="mat" id="matR"></span></div><div class="lbl">lost</div><div class="lost" id="lostR"></div></div>
+        <div class="army B"><div class="who"><span><span class="lbl">Blue · </span><span class="side B" id="bluename"></span></span><span class="mat" id="matB"></span></div><div class="lbl">lost</div><div class="lost" id="lostB"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <p class="foot" id="foot"></p>
+</div>
+
+<script>
+const G = __GAME_DATA__;
+const COLS = "abcdefghij";
+const LAKES = new Set(["c5","c6","d5","d6","g5","g6","h5","h6"]);
+const GLYPH = {Marshal:"10",General:"9",Colonel:"8",Major:"7",Captain:"6",Lieutenant:"5",Sergeant:"4",Miner:"3",Scout:"2",Spy:"S",Bomb:"B",Flag:"F"};
+const VALUE = {Marshal:10,General:9,Colonel:8,Major:7,Captain:6,Spy:6,Lieutenant:5,Miner:5,Sergeant:4,Bomb:4,Scout:3,Flag:0};
+const NAME = {R:G.meta.red, B:G.meta.blue};
+const OPP = {R:"B", B:"R"};
+
+/* replay every ply once, up front */
+const states = [];
+(function build(){
+  let pcs = {}, lost = {R:[], B:[]};
+  for (const c of ["R","B"]) for (const [sq, rank] of Object.entries(G.deploy[c])) pcs[sq] = {color:c, rank, seen:false, moves:0};
+  const snap = (mv, hl) => ({pcs: JSON.parse(JSON.stringify(pcs)), lost:{R:[...lost.R], B:[...lost.B]}, mv, hl});
+  states.push(snap(null, {}));
+  for (const mv of G.moves){
+    const [frm, to] = mv.move.split("-");
+    const p = pcs[frm]; delete pcs[frm]; p.moves++;
+    const hl = {from:frm, to};
+    if (mv.combat){
+      const d = pcs[to]; p.seen = true; d.seen = true; hl.combat = true;
+      const o = mv.combat.outcome;
+      if (o === "defender"){ lost[d.color].push(d.rank); pcs[to] = p; }
+      else if (o === "attacker"){ lost[p.color].push(p.rank); }
+      else { lost[d.color].push(d.rank); lost[p.color].push(p.rank); delete pcs[to]; }
+    } else pcs[to] = p;
+    states.push(snap(mv, hl));
+  }
+})();
+
+const N = states.length - 1;
+let ply = 0, view = "all", timer = null;
+const $ = id => document.getElementById(id);
+const board = $("board"), scrub = $("scrub");
+scrub.max = N;
+$("plyof").textContent = "of " + N;
+$("redname").textContent = NAME.R; $("bluename").textContent = NAME.B;
+$("foot").innerHTML = `Record <code>${G.meta.record}</code> · Prompt Version <code>${G.meta.prompt_version}</code> · ${G.meta.setup_text} · ${G.meta.move_cap}-ply cap · thinking <code>${G.meta.thinking}</code>. Red is <code>${G.meta.red_model}</code>; Blue is <code>${G.meta.blue_model}</code>. Result: ${G.meta.result === "R" ? NAME.R : G.meta.result === "B" ? NAME.B : "draw"} by ${G.meta.reason.replace(/_/g, " ")} at ply ${G.meta.plies}.`;
+
+/* board skeleton */
+function cell(cls, txt){ const d = document.createElement("div"); d.className = cls; if (txt) d.textContent = txt; return d; }
+const squares = {};
+board.appendChild(cell("coord"));
+for (const c of COLS) board.appendChild(cell("coord", c));
+board.appendChild(cell("coord"));
+for (let r = 10; r >= 1; r--){
+  board.appendChild(cell("coord", r));
+  for (const c of COLS){
+    const sq = c + r; const d = cell("sq" + (LAKES.has(sq) ? " lake" : "")); d.dataset.sq = sq; squares[sq] = d; board.appendChild(d);
+  }
+  board.appendChild(cell("coord", r));
+}
+board.appendChild(cell("coord"));
+for (const c of COLS) board.appendChild(cell("coord", c));
+board.appendChild(cell("coord"));
+
+function tile(p, hidden){
+  const t = document.createElement("div");
+  t.className = "piece " + (hidden ? "unknown" : p.color + (p.seen ? " seen" : ""));
+  const g = document.createElement("div"); g.className = "g"; g.textContent = hidden ? "?" : GLYPH[p.rank];
+  const n = document.createElement("div"); n.className = "n"; n.textContent = hidden ? (p.moves ? "moved" : "") : p.rank;
+  t.append(g, n); return t;
+}
+function material(pcs, c){ return Object.values(pcs).filter(p => p.color === c).reduce((s, p) => s + VALUE[p.rank], 0); }
+function fmt(n){ return n.toLocaleString("en-US"); }
+
+function render(){
+  const s = states[ply];
+  for (const sq in squares){
+    const d = squares[sq]; d.className = "sq" + (LAKES.has(sq) ? " lake" : ""); d.replaceChildren();
+    const p = s.pcs[sq];
+    if (p){ const hidden = view !== "all" && p.color !== view && !p.seen; d.appendChild(tile(p, hidden)); }
+  }
+  if (s.hl.from){ squares[s.hl.from].classList.add("from"); squares[s.hl.to].classList.add("to"); if (s.hl.combat) squares[s.hl.to].classList.add("combat"); }
+  $("plynum").textContent = ply; scrub.value = ply;
+  const mv = s.mv;
+  if (!mv){
+    $("mover").innerHTML = `Deployment. ${G.meta.setup_html} Red moves first.`;
+    $("combat").hidden = true; $("why").textContent = "Press Play, or step with the arrow keys."; $("meta").textContent = "";
+  } else {
+    const [frm, to] = mv.move.split("-");
+    $("mover").innerHTML = `<span class="side ${mv.color}">${NAME[mv.color]}</span> moves <b>${mv.rank}</b> <code>${frm}</code> → <code>${to}</code>`;
+    const cb = $("combat");
+    if (mv.combat){
+      const c = mv.combat; let verdict;
+      if (c.defender === "Flag") verdict = "the Flag is captured";
+      else if (c.outcome === "defender") verdict = `${c.defender} is removed`;
+      else if (c.outcome === "attacker") verdict = `${c.attacker} is removed`;
+      else verdict = "both are removed";
+      cb.textContent = `${c.attacker} attacks ${c.defender} · ${verdict}`;
+      cb.className = "combat " + (c.outcome === "attacker" ? "loss" : "win"); cb.hidden = false;
+    } else cb.hidden = true;
+    $("why").textContent = mv.rationale || "";
+    $("meta").textContent = `${fmt(mv.thinking_tokens || 0)} thinking tokens · ${mv.seconds}s`;
+  }
+  $("matR").textContent = material(s.pcs, "R"); $("matB").textContent = material(s.pcs, "B");
+  for (const c of ["R","B"]){
+    const box = $("lost" + c); box.replaceChildren();
+    for (const rank of s.lost[c]){ const ch = document.createElement("span"); ch.className = "chip " + c; ch.title = rank; ch.textContent = GLYPH[rank]; box.appendChild(ch); }
+  }
+}
+function go(n){ ply = Math.max(0, Math.min(N, n)); render(); if (ply === N) stop(); }
+function stop(){ if (timer){ clearInterval(timer); timer = null; } $("play").textContent = "Play"; }
+function play(){ if (ply >= N) ply = 0; stop(); $("play").textContent = "Pause"; timer = setInterval(() => go(ply + 1), +$("speed").value); }
+$("play").onclick = () => timer ? stop() : play();
+$("first").onclick = () => { stop(); go(0); };
+$("last").onclick = () => { stop(); go(N); };
+$("prev").onclick = () => { stop(); go(ply - 1); };
+$("next").onclick = () => { stop(); go(ply + 1); };
+$("speed").onchange = () => { if (timer) play(); };
+scrub.oninput = () => { stop(); go(+scrub.value); };
+document.querySelectorAll(".seg button").forEach(b => b.onclick = () => {
+  view = b.dataset.view; document.querySelectorAll(".seg button").forEach(x => x.setAttribute("aria-pressed", x === b)); render();
+});
+document.addEventListener("keydown", e => {
+  if (e.target.tagName === "SELECT") return;
+  if (e.key === "ArrowRight"){ stop(); go(ply + 1); } else if (e.key === "ArrowLeft"){ stop(); go(ply - 1); }
+  else if (e.key === " "){ e.preventDefault(); timer ? stop() : play(); } else if (e.key === "Home"){ stop(); go(0); } else if (e.key === "End"){ stop(); go(N); }
+});
+render();
+</script>
